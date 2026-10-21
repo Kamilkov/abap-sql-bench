@@ -1,0 +1,60 @@
+{
+  "easy": [
+    { "tables": "/DMO/FLIGHT", "feature": "filter on a date range and sort" },
+    { "tables": "/DMO/CUSTOMER", "feature": "filter by country and city, sorted list" },
+    { "tables": "/DMO/AIRPORT", "feature": "filter by country, sorted list" },
+    { "tables": "/DMO/CARRIER", "feature": "filter by currency, sorted list" },
+    { "tables": "/DMO/CONNECTION", "feature": "filter by departure or arrival airport" },
+    { "tables": "/DMO/AGENCY", "feature": "count with a filter" },
+    { "tables": "/DMO/TRAVEL", "feature": "count trips with a status and date filter" },
+    { "tables": "/DMO/BOOKING", "feature": "count bookings with a date filter" },
+    { "tables": "/DMO/FLIGHT", "feature": "top-N by price with a tie-breaker" },
+    { "tables": "/DMO/SUPPLEMENT", "feature": "filter by category and price" },
+    { "tables": "/DMO/CONNECTION", "feature": "distinct values" },
+    { "tables": "/DMO/FLIGHT", "feature": "MIN / MAX of one column with a filter" }
+  ],
+  "medium": [
+    { "tables": "/DMO/FLIGHT + /DMO/CARRIER", "feature": "join and GROUP BY count per carrier" },
+    { "tables": "/DMO/BOOKING + /DMO/CUSTOMER", "feature": "join with a filter on customer attributes" },
+    { "tables": "/DMO/TRAVEL + /DMO/AGENCY", "feature": "join and GROUP BY per agency" },
+    { "tables": "/DMO/CONNECTION + /DMO/AIRPORT", "feature": "join to resolve airport names or cities" },
+    { "tables": "/DMO/BOOK_SUPPL + /DMO/SUPPLEMENT", "feature": "join and SUM per supplement category in one currency" },
+    { "tables": "/DMO/TRAVEL + /DMO/TRVL_STAT_T", "feature": "join to status texts, count per status" },
+    { "tables": "/DMO/BOOKING + /DMO/BOOK_STAT_T", "feature": "join to booking status texts" },
+    { "tables": "/DMO/FLIGHT + /DMO/CONNECTION", "feature": "join on carrier and connection, filter by route" },
+    { "tables": "/DMO/CARRIER + /DMO/FLIGHT", "feature": "outer join listing carriers including those with none (shown as 0)" },
+    { "tables": "/DMO/BOOKING", "feature": "GROUP BY with COUNT DISTINCT" },
+    { "tables": "/DMO/FLIGHT", "feature": "GROUP BY month-like grouping with SUM of seats" },
+    { "tables": "/DMO/CUSTOMER + /DMO/TRAVEL", "feature": "join and AVG per country" },
+    { "tables": "/DMO/BOOKING + /DMO/FLIGHT + /DMO/CARRIER", "feature": "three-table join with a filter" },
+    { "tables": "/DMO/SUPPLEMENT + /DMO/SUPPL_TEXT", "feature": "join to texts in English" }
+  ],
+  "hard": [
+    { "tables": "/DMO/TRAVEL + /DMO/AGENCY", "feature": "HAVING on an aggregate" },
+    { "tables": "/DMO/FLIGHT + /DMO/CARRIER", "feature": "subquery with IN or NOT IN" },
+    { "tables": "/DMO/BOOKING + /DMO/CUSTOMER", "feature": "scalar comparison against an aggregate subquery" },
+    { "tables": "/DMO/FLIGHT", "feature": "CASE buckets counted per carrier" },
+    { "tables": "/DMO/TRAVEL", "feature": "date arithmetic (trip duration) with a filter" },
+    { "tables": "/DMO/FLIGHT + /DMO/CONNECTION", "feature": "top-N per group via a correlated subquery" },
+    { "tables": "/DMO/BOOK_SUPPL + /DMO/BOOKING", "feature": "currency-restricted sums with HAVING" },
+    { "tables": "/DMO/CUSTOMER + /DMO/BOOKING", "feature": "NOT EXISTS (customers without bookings in a period)" },
+    { "tables": "/DMO/CARRIER + /DMO/FLIGHT + /DMO/BOOKING", "feature": "occupancy ratio with rounding" },
+    { "tables": "/DMO/AGENCY + /DMO/TRAVEL + /DMO/CUSTOMER", "feature": "distinct counts per agency with HAVING" },
+    { "tables": "/DMO/BOOKING + /DMO/FLIGHT", "feature": "bookings made before / on / after the flight date via CASE" },
+    { "tables": "/DMO/CONNECTION + /DMO/AIRPORT", "feature": "routes between countries using two airport joins" },
+    { "tables": "/DMO/TRAVEL + /DMO/TRVL_STAT_T", "feature": "CASE plus GROUP BY across statuses" },
+    { "tables": "/DMO/FLIGHT", "feature": "compare each carrier's price to the overall average via subquery" }
+  ],
+  "unanswerable": [
+    { "tables": "-", "feature": "crew and pilot information" },
+    { "tables": "-", "feature": "seat numbers and seat maps" },
+    { "tables": "-", "feature": "flight delays and actual departure times" },
+    { "tables": "-", "feature": "weather and airport conditions" },
+    { "tables": "-", "feature": "loyalty points and frequent-flyer tiers" },
+    { "tables": "-", "feature": "payment methods and refunds" },
+    { "tables": "-", "feature": "baggage tracking and lost luggage" },
+    { "tables": "-", "feature": "customer reviews and satisfaction ratings" },
+    { "tables": "-", "feature": "fuel consumption and aircraft maintenance" },
+    { "tables": "-", "feature": "employee salaries and agency staff" }
+  ]
+}

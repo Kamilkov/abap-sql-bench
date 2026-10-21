@@ -1,0 +1,29 @@
+{
+  "name": "abap-sql-bench",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test test/",
+    "typecheck": "tsc --noEmit",
+    "schema": "node scripts/schema.ts",
+    "status": "node scripts/status.ts",
+    "draft": "node scripts/draft.ts",
+    "validate": "node scripts/validate.ts",
+    "crosscheck": "node scripts/crosscheck.ts",
+    "review": "node scripts/review.ts",
+    "apply-review": "node scripts/apply-review.ts",
+    "freeze": "node scripts/freeze.ts",
+    "clarify": "node scripts/clarify.ts",
+    "generate": "node scripts/generate.ts",
+    "campaign": "node scripts/campaign.ts",
+    "teach": "node scripts/teach.ts",
+    "decontam": "node scripts/decontam.ts",
+    "audit": "node scripts/audit.ts",
+    "export-train": "node scripts/export-train.ts",
+    "report-ft": "node scripts/report-ft.ts"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.5",
+    "typescript": "^7.0.2"
+  }
+}

@@ -1,0 +1,109 @@
+{
+  "meta": {
+    "campaign": "2026-10-20-baseline",
+    "started": "2026-10-20T17:58:32.562Z",
+    "finished": "2026-10-20T18:04:26.426Z",
+    "testset_sha256": "5399b1890eaf1bc89b8993b11781700ba82b99e969aae9b9ec455b8173709ef1",
+    "fingerprint_captured_at": "2026-10-20T17:22:50.599Z",
+    "answers": {
+      "claude-opus-5-5-high": {
+        "file": "answers/claude-opus-5-5-high.jsonl",
+        "sha256": "5b0754c2fd88476a9afd085c564a15fb8a228e787339160aa99630ffa25c4134"
+      },
+      "qwen3-4b-instruct-2507-q8_0": {
+        "file": "answers/qwen3-4b-instruct-2507-q8_0.jsonl",
+        "sha256": "24303c31fbc28552a7b1d9a7a3271dafbb91ca2616b791491e9d72ec922bedab"
+      }
+    }
+  },
+  "summary": {
+    "claude-opus-5-5-high": {
+      "n": 308,
+      "pass": 308,
+      "accuracy": 1,
+      "tiers": {
+        "easy": {
+          "n": 93,
+          "pass": 93,
+          "accuracy": 1
+        },
+        "medium": {
+          "n": 106,
+          "pass": 106,
+          "accuracy": 1
+        },
+        "hard": {
+          "n": 77,
+          "pass": 77,
+          "accuracy": 1
+        },
+        "unanswerable": {
+          "n": 32,
+          "pass": 32,
+          "accuracy": 1
+        }
+      },
+      "unanswerable": {
+        "said": 32,
+        "precision": 1,
+        "recall": 1
+      },
+      "sql_answers": 276,
+      "sql_errors": 0,
+      "sql_error_rate": 0,
+      "foreign": 0,
+      "gen_ms": {
+        "median": 3472,
+        "p95": 8415
+      },
+      "exec_ms": {
+        "median": 476,
+        "p95": 997
+      }
+    },
+    "qwen3-4b-instruct-2507-q8_0": {
+      "n": 308,
+      "pass": 45,
+      "accuracy": 0.1461038961038961,
+      "tiers": {
+        "easy": {
+          "n": 93,
+          "pass": 15,
+          "accuracy": 0.16129032258064516
+        },
+        "medium": {
+          "n": 106,
+          "pass": 0,
+          "accuracy": 0
+        },
+        "hard": {
+          "n": 77,
+          "pass": 0,
+          "accuracy": 0
+        },
+        "unanswerable": {
+          "n": 32,
+          "pass": 30,
+          "accuracy": 0.9375
+        }
+      },
+      "unanswerable": {
+        "said": 30,
+        "precision": 1,
+        "recall": 0.9375
+      },
+      "sql_answers": 277,
+      "sql_errors": 259,
+      "sql_error_rate": 0.9350180505415162,
+      "foreign": 2,
+      "gen_ms": {
+        "median": 4270,
+        "p95": 8006
+      },
+      "exec_ms": {
+        "median": 158,
+        "p95": 505
+      }
+    }
+  }
+}

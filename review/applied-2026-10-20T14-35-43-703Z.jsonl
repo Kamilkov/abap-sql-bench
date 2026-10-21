@@ -1,0 +1,3 @@
+{"id":"q0066","action":"rewrite","question":"How many scheduled flights does each airline have, including airlines with none (show 0)? Show airline codes and flight counts."}
+{"id":"q0078","action":"rewrite","question":"For each airline that has listed connections, how many different destination airports does it serve through those connections? Return airline codes, names, and destination airport counts."}
+{"id":"q0208","action":"rewrite","question":"How many flight bookings does each airline have, including airlines with none (show 0)? Show airline codes and booking counts."}

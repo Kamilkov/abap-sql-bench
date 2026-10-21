@@ -1,0 +1,39 @@
+{
+  "items": [
+    {
+      "question": "For flights in October 2026, list each carrier's name and the number of flights diverted to another airport.",
+      "reference_sql": null,
+      "ordered": false
+    },
+    {
+      "question": "For flights in November 2026, list each carrier's name and the total cargo weight carried in kilograms, rounded to 2 decimals.",
+      "reference_sql": null,
+      "ordered": false
+    },
+    {
+      "question": "For trips starting in December 2026, list each agency's name and the number of customer support calls it received about those trips.",
+      "reference_sql": null,
+      "ordered": false
+    },
+    {
+      "question": "For flights in January 2027, list each carrier's name and the number of passengers upgraded from economy to business class.",
+      "reference_sql": null,
+      "ordered": false
+    },
+    {
+      "question": "For flights in February 2027 that required deicing, list each departure airport's name and the average deicing time in minutes, rounded to 2 decimals.",
+      "reference_sql": null,
+      "ordered": false
+    },
+    {
+      "question": "How many customers hold citizenship in each country, counting customers with multiple citizenships in each applicable country?",
+      "reference_sql": null,
+      "ordered": false
+    },
+    {
+      "question": "For flights in September 2026, list each carrier's name and the number of onboard medical emergencies.",
+      "reference_sql": null,
+      "ordered": false
+    }
+  ]
+}

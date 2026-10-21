@@ -1,0 +1,1 @@
+{"id":"q0243","action":"rewrite","question":"Which 10 agency–customer pairs account for the most trips? Return agency IDs and names, customer IDs, first names and last names, and trip counts, most trips first, then by agency ID and customer ID.","ordered":true}

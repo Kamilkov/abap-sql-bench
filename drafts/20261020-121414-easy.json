@@ -1,0 +1,54 @@
+{
+  "items": [
+    {
+      "question": "What name and currency code are recorded for airline LH?",
+      "reference_sql": "SELECT c~name, c~currency_code FROM /dmo/carrier AS c WHERE c~carrier_id = 'LH'",
+      "ordered": false
+    },
+    {
+      "question": "How many different countries have airports listed?",
+      "reference_sql": "SELECT COUNT( DISTINCT a~country ) AS country_count FROM /dmo/airport AS a",
+      "ordered": false
+    },
+    {
+      "question": "Show the first 10 agencies alphabetically, with their names, agency numbers, phone numbers and email addresses. Break ties by agency number.",
+      "reference_sql": "SELECT a~name, a~agency_id, a~phone_number, a~email_address FROM /dmo/agency AS a ORDER BY a~name ASCENDING, a~agency_id ASCENDING UP TO 10 ROWS",
+      "ordered": true
+    },
+    {
+      "question": "How many routes depart from each airport? Show departure airport codes and route counts.",
+      "reference_sql": "SELECT c~airport_from_id, COUNT(*) AS route_count FROM /dmo/connection AS c GROUP BY c~airport_from_id",
+      "ordered": false
+    },
+    {
+      "question": "How many different customers have flight bookings?",
+      "reference_sql": "SELECT COUNT( DISTINCT b~customer_id ) AS customer_count FROM /dmo/booking AS b",
+      "ordered": false
+    },
+    {
+      "question": "How many times has each extra been added to a booking? Show extra codes and counts.",
+      "reference_sql": "SELECT s~supplement_id, COUNT(*) AS extra_count FROM /dmo/book_suppl AS s GROUP BY s~supplement_id",
+      "ordered": false
+    },
+    {
+      "question": "How many flights are scheduled on each date in November 2026? Show dates and flight counts, earliest date first.",
+      "reference_sql": "SELECT f~flight_date, COUNT(*) AS flight_count FROM /dmo/flight AS f WHERE f~flight_date BETWEEN '20261101' AND '20261130' GROUP BY f~flight_date ORDER BY f~flight_date ASCENDING",
+      "ordered": true
+    },
+    {
+      "question": "Show the first 10 customers by customer number, with their customer numbers, first and last names, phone numbers and email addresses.",
+      "reference_sql": "SELECT c~customer_id, c~first_name, c~last_name, c~phone_number, c~email_address FROM /dmo/customer AS c ORDER BY c~customer_id ASCENDING UP TO 10 ROWS",
+      "ordered": true
+    },
+    {
+      "question": "Which 10 trips priced in euros have the lowest booking fees? Show trip numbers and booking fees, lowest fee first, then by trip number.",
+      "reference_sql": "SELECT t~travel_id, t~booking_fee FROM /dmo/travel AS t WHERE t~currency_code = 'EUR' ORDER BY t~booking_fee ASCENDING, t~travel_id ASCENDING UP TO 10 ROWS",
+      "ordered": true
+    },
+    {
+      "question": "Which routes connect Frankfurt (FRA) and New York (JFK), in either direction? Show airline codes, route numbers, and departure and arrival airport codes.",
+      "reference_sql": "SELECT c~carrier_id, c~connection_id, c~airport_from_id, c~airport_to_id FROM /dmo/connection AS c WHERE ( c~airport_from_id = 'FRA' AND c~airport_to_id = 'JFK' ) OR ( c~airport_from_id = 'JFK' AND c~airport_to_id = 'FRA' )",
+      "ordered": false
+    }
+  ]
+}

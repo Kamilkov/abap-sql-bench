@@ -1,0 +1,6 @@
+tier            drafted  rejected validated    agreed  disputed  accepted   dropped
+easy                  0        16         0        50        24         0         0
+medium                0        33         0        45        32         0         0
+hard                  0        41         0        11        18         0         0
+unanswerable          0         0         0        30         0         0         0
+total 300

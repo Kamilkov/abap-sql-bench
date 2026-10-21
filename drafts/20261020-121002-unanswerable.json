@@ -1,0 +1,54 @@
+{
+  "items": [
+    {
+      "question": "For flights in October 2026, list each carrier's name and the number of passengers denied boarding because of overbooking.",
+      "reference_sql": null,
+      "ordered": false
+    },
+    {
+      "question": "How many customers on trips starting in November 2026 were under 18 when their trip began?",
+      "reference_sql": null,
+      "ordered": false
+    },
+    {
+      "question": "For flights in December 2026, list each carrier's name and the number of passengers who requested wheelchair assistance.",
+      "reference_sql": null,
+      "ordered": false
+    },
+    {
+      "question": "How many travel insurance claims were filed for trips starting in September 2026?",
+      "reference_sql": null,
+      "ordered": false
+    },
+    {
+      "question": "List the names of airports in Germany and the length of each airport's longest runway in meters.",
+      "reference_sql": null,
+      "ordered": false
+    },
+    {
+      "question": "For flights in January 2027, list each carrier's name and the number of pets transported in the cabin.",
+      "reference_sql": null,
+      "ordered": false
+    },
+    {
+      "question": "How many passengers used an airline lounge at Frankfurt Airport before flights in October 2026?",
+      "reference_sql": null,
+      "ordered": false
+    },
+    {
+      "question": "For flights in February 2027, list each carrier's name and the number of customer complaints about cabin cleanliness.",
+      "reference_sql": null,
+      "ordered": false
+    },
+    {
+      "question": "How many flight bookings made in December 2026 used a promotional discount code?",
+      "reference_sql": null,
+      "ordered": false
+    },
+    {
+      "question": "For flights in November 2026, list each carrier's name and the number of passengers who watched an onboard movie.",
+      "reference_sql": null,
+      "ordered": false
+    }
+  ]
+}

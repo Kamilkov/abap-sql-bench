@@ -1,0 +1,49 @@
+{
+  "items": [
+    {
+      "question": "For trips starting in the fourth quarter of 2026, show each traveler country and its numbers of booked, planned, and new trips.",
+      "reference_sql": "SELECT c~country_code, SUM( CASE WHEN t~status = 'B' THEN 1 ELSE 0 END ) AS booked_trips, SUM( CASE WHEN t~status = 'P' THEN 1 ELSE 0 END ) AS planned_trips, SUM( CASE WHEN t~status = 'N' THEN 1 ELSE 0 END ) AS new_trips FROM /dmo/travel AS t INNER JOIN /dmo/customer AS c ON c~customer_id = t~customer_id WHERE t~begin_date BETWEEN '20261001' AND '20261231' GROUP BY c~country_code",
+      "ordered": false
+    },
+    {
+      "question": "Show the first three scheduled flights in October 2026 for each airline connection. Return airline codes, connection numbers, flight dates, prices, and currencies, sorted by airline code, connection number, then date.",
+      "reference_sql": "SELECT f~carrier_id, f~connection_id, f~flight_date, f~price, f~currency_code FROM /dmo/flight AS f WHERE f~flight_date BETWEEN '20261001' AND '20261031' AND ( SELECT COUNT(*) FROM /dmo/flight AS e WHERE e~carrier_id = f~carrier_id AND e~connection_id = f~connection_id AND e~flight_date BETWEEN '20261001' AND '20261031' AND e~flight_date < f~flight_date ) < 3 ORDER BY f~carrier_id ASCENDING, f~connection_id ASCENDING, f~flight_date ASCENDING",
+      "ordered": true
+    },
+    {
+      "question": "Show the first 20 October 2026 flights with bookings through at least two agencies, ordered by departure date, airline code, then connection number. Return those flight details, airline names, agency counts, and booking counts.",
+      "reference_sql": "SELECT b~flight_date, b~carrier_id, b~connection_id, c~name, COUNT( DISTINCT t~agency_id ) AS agency_count, COUNT(*) AS booking_count FROM /dmo/booking AS b INNER JOIN /dmo/travel AS t ON t~travel_id = b~travel_id INNER JOIN /dmo/carrier AS c ON c~carrier_id = b~carrier_id WHERE b~flight_date BETWEEN '20261001' AND '20261031' GROUP BY b~flight_date, b~carrier_id, b~connection_id, c~name HAVING COUNT( DISTINCT t~agency_id ) >= 2 ORDER BY b~flight_date ASCENDING, b~carrier_id ASCENDING, b~connection_id ASCENDING UP TO 20 ROWS",
+      "ordered": true
+    },
+    {
+      "question": "Which customers have flight bookings priced in at least three currencies? Return customer numbers, first and last names, currency counts, and booking counts.",
+      "reference_sql": "SELECT c~customer_id, c~first_name, c~last_name, COUNT( DISTINCT b~currency_code ) AS currency_count, COUNT(*) AS booking_count FROM /dmo/customer AS c INNER JOIN /dmo/booking AS b ON b~customer_id = c~customer_id GROUP BY c~customer_id, c~first_name, c~last_name HAVING COUNT( DISTINCT b~currency_code ) >= 3",
+      "ordered": false
+    },
+    {
+      "question": "Which extras were purchased on more than one flight booking within the same trip starting in October 2026? Return trip numbers, extra codes, the number of bookings containing each extra, and its purchase count.",
+      "reference_sql": "SELECT t~travel_id, s~supplement_id, COUNT( DISTINCT s~booking_id ) AS booking_count, COUNT(*) AS purchase_count FROM /dmo/travel AS t INNER JOIN /dmo/book_suppl AS s ON s~travel_id = t~travel_id WHERE t~begin_date BETWEEN '20261001' AND '20261031' GROUP BY t~travel_id, s~supplement_id HAVING COUNT( DISTINCT s~booking_id ) > 1",
+      "ordered": false
+    },
+    {
+      "question": "Which agencies arranged flights to at least three destination countries for trips starting in October 2026? Return agency numbers, names, destination-country counts, destination-airport counts, and flight-booking counts.",
+      "reference_sql": "SELECT a~agency_id, a~name, COUNT( DISTINCT p~country ) AS destination_country_count, COUNT( DISTINCT p~airport_id ) AS destination_airport_count, COUNT(*) AS booking_count FROM /dmo/agency AS a INNER JOIN /dmo/travel AS t ON t~agency_id = a~agency_id INNER JOIN /dmo/booking AS b ON b~travel_id = t~travel_id INNER JOIN /dmo/connection AS n ON n~carrier_id = b~carrier_id AND n~connection_id = b~connection_id INNER JOIN /dmo/airport AS p ON p~airport_id = n~airport_to_id WHERE t~begin_date BETWEEN '20261001' AND '20261031' GROUP BY a~agency_id, a~name HAVING COUNT( DISTINCT p~country ) >= 3",
+      "ordered": false
+    },
+    {
+      "question": "For each status, how many trips overlap October 2026, including their start and end dates? Return status codes, total overlapping trips, and separate counts for those starting in October and those starting earlier.",
+      "reference_sql": "SELECT t~status, COUNT(*) AS overlapping_trips, SUM( CASE WHEN t~begin_date >= '20261001' THEN 1 ELSE 0 END ) AS starting_in_october, SUM( CASE WHEN t~begin_date < '20261001' THEN 1 ELSE 0 END ) AS starting_earlier FROM /dmo/travel AS t WHERE t~begin_date <= '20261031' AND t~end_date >= '20261001' GROUP BY t~status",
+      "ordered": false
+    },
+    {
+      "question": "For trips starting in the fourth quarter of 2026, show total trip prices separately for trips ending before 2027 and those continuing into 2027 or beyond. Return each currency and both totals, keeping currencies separate.",
+      "reference_sql": "SELECT t~currency_code, SUM( CASE WHEN t~end_date < '20270101' THEN t~total_price ELSE 0 END ) AS ending_before_2027_total, SUM( CASE WHEN t~end_date >= '20270101' THEN t~total_price ELSE 0 END ) AS continuing_into_2027_total FROM /dmo/travel AS t WHERE t~begin_date BETWEEN '20261001' AND '20261231' GROUP BY t~currency_code",
+      "ordered": false
+    },
+    {
+      "question": "Which customers have trips containing flights to the same destination airport on at least three separate trips? Show the first 20 customer–airport pairs by customer number, then airport code. Return customer numbers, first and last names, airport codes and names, distinct trip counts, and flight-booking counts.",
+      "reference_sql": "SELECT c~customer_id, c~first_name, c~last_name, p~airport_id, p~name, COUNT( DISTINCT t~travel_id ) AS trip_count, COUNT(*) AS booking_count FROM /dmo/customer AS c INNER JOIN /dmo/travel AS t ON t~customer_id = c~customer_id INNER JOIN /dmo/booking AS b ON b~travel_id = t~travel_id INNER JOIN /dmo/connection AS n ON n~carrier_id = b~carrier_id AND n~connection_id = b~connection_id INNER JOIN /dmo/airport AS p ON p~airport_id = n~airport_to_id GROUP BY c~customer_id, c~first_name, c~last_name, p~airport_id, p~name HAVING COUNT( DISTINCT t~travel_id ) >= 3 ORDER BY c~customer_id ASCENDING, p~airport_id ASCENDING UP TO 20 ROWS",
+      "ordered": true
+    }
+  ]
+}

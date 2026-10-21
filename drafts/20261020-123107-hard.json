@@ -1,0 +1,54 @@
+{
+  "items": [
+    {
+      "question": "For each trip starting in October 2026, show its first flight booking, choosing the lowest booking number if several were made on the same day. Return the trip number, booking number, booking date, flight date, airline name, price, and currency.",
+      "reference_sql": "SELECT t~travel_id, b~booking_id, b~booking_date, b~flight_date, c~name, b~flight_price, b~currency_code FROM /DMO/TRAVEL AS t INNER JOIN /DMO/BOOKING AS b ON b~travel_id = t~travel_id INNER JOIN /DMO/CARRIER AS c ON c~carrier_id = b~carrier_id WHERE t~begin_date BETWEEN '20261001' AND '20261031' AND NOT EXISTS ( SELECT * FROM /DMO/BOOKING AS earlier WHERE earlier~travel_id = b~travel_id AND ( earlier~booking_date < b~booking_date OR ( earlier~booking_date = b~booking_date AND earlier~booking_id < b~booking_id ) ) )",
+      "ordered": false
+    },
+    {
+      "question": "For trips starting in June 2026, how many lasted under 7 days, 7 to 13 days, or at least 14 days? Return each status code and the three counts, measuring duration as the days between start and end.",
+      "reference_sql": "SELECT t~status, SUM( CASE WHEN dats_days_between( t~begin_date, t~end_date ) < 7 THEN 1 ELSE 0 END ) AS under_7_days, SUM( CASE WHEN dats_days_between( t~begin_date, t~end_date ) BETWEEN 7 AND 13 THEN 1 ELSE 0 END ) AS days_7_to_13, SUM( CASE WHEN dats_days_between( t~begin_date, t~end_date ) >= 14 THEN 1 ELSE 0 END ) AS at_least_14_days FROM /DMO/TRAVEL AS t WHERE t~begin_date BETWEEN '20260601' AND '20260630' GROUP BY t~status",
+      "ordered": false
+    },
+    {
+      "question": "For each airline flying in October 2026, how many scheduled flights used aircraft with under 300 seats, and how many used aircraft with at least 300 seats? Return airline codes, names, and both counts.",
+      "reference_sql": "SELECT c~carrier_id, c~name, SUM( CASE WHEN f~seats_max < 300 THEN 1 ELSE 0 END ) AS under_300_seats, SUM( CASE WHEN f~seats_max >= 300 THEN 1 ELSE 0 END ) AS at_least_300_seats FROM /DMO/FLIGHT AS f INNER JOIN /DMO/CARRIER AS c ON c~carrier_id = f~carrier_id WHERE f~flight_date BETWEEN '20261001' AND '20261031' GROUP BY c~carrier_id, c~name",
+      "ordered": false
+    },
+    {
+      "question": "For each type of purchased extra, how many purchases belong to booked, planned, and new trips? Return the extra type code and the three purchase counts.",
+      "reference_sql": "SELECT s~supplement_category, SUM( CASE WHEN t~status = 'B' THEN 1 ELSE 0 END ) AS booked_trip_purchases, SUM( CASE WHEN t~status = 'P' THEN 1 ELSE 0 END ) AS planned_trip_purchases, SUM( CASE WHEN t~status = 'N' THEN 1 ELSE 0 END ) AS new_trip_purchases FROM /DMO/BOOK_SUPPL AS bs INNER JOIN /DMO/SUPPLEMENT AS s ON s~supplement_id = bs~supplement_id INNER JOIN /DMO/TRAVEL AS t ON t~travel_id = bs~travel_id GROUP BY s~supplement_category",
+      "ordered": false
+    },
+    {
+      "question": "For each destination country served in October 2026, how many scheduled flights departed from Germany and how many departed from other countries? Return destination country codes and both flight counts.",
+      "reference_sql": "SELECT destination~country, SUM( CASE WHEN origin~country = 'DE' THEN 1 ELSE 0 END ) AS flights_from_germany, SUM( CASE WHEN origin~country <> 'DE' THEN 1 ELSE 0 END ) AS flights_from_elsewhere FROM /DMO/FLIGHT AS f INNER JOIN /DMO/CONNECTION AS r ON r~carrier_id = f~carrier_id AND r~connection_id = f~connection_id INNER JOIN /DMO/AIRPORT AS origin ON origin~airport_id = r~airport_from_id INNER JOIN /DMO/AIRPORT AS destination ON destination~airport_id = r~airport_to_id WHERE f~flight_date BETWEEN '20261001' AND '20261031' GROUP BY destination~country",
+      "ordered": false
+    },
+    {
+      "question": "Which 20 flight bookings for departures in December 2026 were made furthest in advance? Return trip and booking numbers, airline names, booking and flight dates, and days in advance. Sort by days in advance, highest first, then by trip and booking number.",
+      "reference_sql": "SELECT b~travel_id, b~booking_id, c~name, b~booking_date, b~flight_date, dats_days_between( b~booking_date, b~flight_date ) AS days_in_advance FROM /DMO/BOOKING AS b INNER JOIN /DMO/CARRIER AS c ON c~carrier_id = b~carrier_id WHERE b~flight_date BETWEEN '20261201' AND '20261231' ORDER BY days_in_advance DESCENDING, b~travel_id ASCENDING, b~booking_id ASCENDING UP TO 20 ROWS",
+      "ordered": true
+    },
+    {
+      "question": "Which customers have used both an agency in their own country and an agency abroad? Return customer numbers, first and last names, and country codes.",
+      "reference_sql": "SELECT c~customer_id, c~first_name, c~last_name, c~country_code FROM /DMO/CUSTOMER AS c WHERE EXISTS ( SELECT * FROM /DMO/TRAVEL AS domestic_trip INNER JOIN /DMO/AGENCY AS domestic_agency ON domestic_agency~agency_id = domestic_trip~agency_id WHERE domestic_trip~customer_id = c~customer_id AND domestic_agency~country_code = c~country_code ) AND EXISTS ( SELECT * FROM /DMO/TRAVEL AS foreign_trip INNER JOIN /DMO/AGENCY AS foreign_agency ON foreign_agency~agency_id = foreign_trip~agency_id WHERE foreign_trip~customer_id = c~customer_id AND foreign_agency~country_code <> c~country_code )",
+      "ordered": false
+    },
+    {
+      "question": "For trips starting in October 2026 with at least two euro-priced flight bookings, show the trip number, number of those bookings, cheapest and most expensive booking prices, and their price difference in euros. Sort by price difference, largest first, then by trip number.",
+      "reference_sql": "SELECT t~travel_id, COUNT(*) AS euro_booking_count, MIN( b~flight_price ) AS cheapest_booking_eur, MAX( b~flight_price ) AS most_expensive_booking_eur, MAX( b~flight_price ) - MIN( b~flight_price ) AS price_difference_eur FROM /DMO/TRAVEL AS t INNER JOIN /DMO/BOOKING AS b ON b~travel_id = t~travel_id WHERE t~begin_date BETWEEN '20261001' AND '20261031' AND b~currency_code = 'EUR' GROUP BY t~travel_id HAVING COUNT(*) >= 2 ORDER BY price_difference_eur DESCENDING, t~travel_id ASCENDING",
+      "ordered": true
+    },
+    {
+      "question": "Which 20 trips with the lowest trip numbers contain flights in both directions between the same two airports? Return trip numbers and the trip customers' numbers, first names, and last names, sorted by trip number.",
+      "reference_sql": "SELECT t~travel_id, c~customer_id, c~first_name, c~last_name FROM /DMO/TRAVEL AS t INNER JOIN /DMO/CUSTOMER AS c ON c~customer_id = t~customer_id WHERE EXISTS ( SELECT * FROM /DMO/BOOKING AS b1 INNER JOIN /DMO/CONNECTION AS r1 ON r1~carrier_id = b1~carrier_id AND r1~connection_id = b1~connection_id INNER JOIN /DMO/BOOKING AS b2 ON b2~travel_id = b1~travel_id INNER JOIN /DMO/CONNECTION AS r2 ON r2~carrier_id = b2~carrier_id AND r2~connection_id = b2~connection_id WHERE b1~travel_id = t~travel_id AND r2~airport_from_id = r1~airport_to_id AND r2~airport_to_id = r1~airport_from_id ) ORDER BY t~travel_id ASCENDING UP TO 20 ROWS",
+      "ordered": true
+    },
+    {
+      "question": "For October 2026 flights, how many cost under 500, from 500 to under 1,000, or at least 1,000 in their listed currency? Return each currency and the three flight counts, keeping currencies separate.",
+      "reference_sql": "SELECT f~currency_code, SUM( CASE WHEN f~price < 500 THEN 1 ELSE 0 END ) AS under_500, SUM( CASE WHEN f~price >= 500 AND f~price < 1000 THEN 1 ELSE 0 END ) AS from_500_to_under_1000, SUM( CASE WHEN f~price >= 1000 THEN 1 ELSE 0 END ) AS at_least_1000 FROM /DMO/FLIGHT AS f WHERE f~flight_date BETWEEN '20261001' AND '20261031' GROUP BY f~currency_code",
+      "ordered": false
+    }
+  ]
+}

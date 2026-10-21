@@ -1,0 +1,17 @@
+{
+  "datasets": {
+    "test-v1": {
+      "path": "testset.jsonl",
+      "sha256": "5399b1890eaf1bc89b8993b11781700ba82b99e969aae9b9ec455b8173709ef1",
+      "role": "test"
+    }
+  },
+  "legacy_answers": {
+    "answers/test-v1/claude-opus-5-5-high-shuffled.jsonl": "a8397d5f9c56ed963f2c71ce09e00cae12b83f71dc38b8de63ea985aa5763fa4",
+    "answers/test-v1/claude-opus-5-5-high.jsonl": "5b0754c2fd88476a9afd085c564a15fb8a228e787339160aa99630ffa25c4134",
+    "answers/test-v1/qwen3-4b-instruct-2507-q8_0-fewshot-fixed.jsonl": "e73d4854b093c614a8e409c3b6924e92e33839cd14bce4891c5d21c4f3650eca",
+    "answers/test-v1/qwen3-4b-instruct-2507-q8_0-fewshot.jsonl": "fbffe0c300694d8b72117dcf58ce394229025e6d60b35809618d806ea03d1f50",
+    "answers/test-v1/qwen3-4b-instruct-2507-q8_0-fixed.jsonl": "4ad9749ae8eae253d0c014d5f8bdac13690cfa1d0f005070be1a8d307f610240",
+    "answers/test-v1/qwen3-4b-instruct-2507-q8_0.jsonl": "24303c31fbc28552a7b1d9a7a3271dafbb91ca2616b791491e9d72ec922bedab"
+  }
+}

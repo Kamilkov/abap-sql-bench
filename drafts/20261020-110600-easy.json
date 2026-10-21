@@ -1,0 +1,19 @@
+{
+  "items": [
+    {
+      "question": "List up to 10 airlines that use US dollars, showing their names and airline codes, ordered alphabetically by name and then by airline code.",
+      "reference_sql": "SELECT c~name, c~carrier_id FROM /DMO/CARRIER AS c WHERE c~currency_code = 'USD' ORDER BY c~name ASCENDING, c~carrier_id ASCENDING UP TO 10 ROWS",
+      "ordered": true
+    },
+    {
+      "question": "List up to 10 airports in London, showing their names and airport codes, ordered alphabetically by name and then by airport code.",
+      "reference_sql": "SELECT a~name, a~airport_id FROM /DMO/AIRPORT AS a WHERE a~city = 'London' ORDER BY a~name ASCENDING, a~airport_id ASCENDING UP TO 10 ROWS",
+      "ordered": true
+    },
+    {
+      "question": "How many customers have an address in Germany?",
+      "reference_sql": "SELECT COUNT(*) AS customer_count FROM /DMO/CUSTOMER AS c WHERE c~country_code = 'DE'",
+      "ordered": false
+    }
+  ]
+}

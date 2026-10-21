@@ -1,0 +1,54 @@
+{
+  "items": [
+    {
+      "question": "How many different currencies do the airlines use?",
+      "reference_sql": "SELECT COUNT( DISTINCT c~currency_code ) AS currency_count FROM /dmo/carrier AS c",
+      "ordered": false
+    },
+    {
+      "question": "Which airlines have 'Air' in their name? Show their airline codes, names and currency codes, sorted by airline code.",
+      "reference_sql": "SELECT c~carrier_id, c~name, c~currency_code FROM /dmo/carrier AS c WHERE c~name LIKE '%Air%' ORDER BY c~carrier_id ASCENDING",
+      "ordered": true
+    },
+    {
+      "question": "What city and country code are listed for JFK airport?",
+      "reference_sql": "SELECT a~city, a~country FROM /dmo/airport AS a WHERE a~airport_id = 'JFK'",
+      "ordered": false
+    },
+    {
+      "question": "How many airports are listed in Japan?",
+      "reference_sql": "SELECT COUNT(*) AS airport_count FROM /dmo/airport AS a WHERE a~country = 'JP'",
+      "ordered": false
+    },
+    {
+      "question": "How many customers are there in each country? Show country codes and customer counts.",
+      "reference_sql": "SELECT c~country_code, COUNT(*) AS customer_count FROM /dmo/customer AS c GROUP BY c~country_code",
+      "ordered": false
+    },
+    {
+      "question": "List customers with addresses in Switzerland, showing customer numbers, first names, last names and cities, sorted by last name, then first name and customer number.",
+      "reference_sql": "SELECT c~customer_id, c~first_name, c~last_name, c~city FROM /dmo/customer AS c WHERE c~country_code = 'CH' ORDER BY c~last_name ASCENDING, c~first_name ASCENDING, c~customer_id ASCENDING",
+      "ordered": true
+    },
+    {
+      "question": "List trips starting in March 2027, showing trip numbers and start and end dates, earliest start first, then by trip number.",
+      "reference_sql": "SELECT t~travel_id, t~begin_date, t~end_date FROM /dmo/travel AS t WHERE t~begin_date BETWEEN '20270301' AND '20270331' ORDER BY t~begin_date ASCENDING, t~travel_id ASCENDING",
+      "ordered": true
+    },
+    {
+      "question": "How many trips are there in each status? Show status codes and trip counts.",
+      "reference_sql": "SELECT t~status, COUNT(*) AS trip_count FROM /dmo/travel AS t GROUP BY t~status",
+      "ordered": false
+    },
+    {
+      "question": "List scheduled flights in March 2027, showing airline codes, route numbers, flight dates, aircraft types and seat capacities, sorted by date, then airline code and route number.",
+      "reference_sql": "SELECT f~carrier_id, f~connection_id, f~flight_date, f~plane_type_id, f~seats_max FROM /dmo/flight AS f WHERE f~flight_date BETWEEN '20270301' AND '20270331' ORDER BY f~flight_date ASCENDING, f~carrier_id ASCENDING, f~connection_id ASCENDING",
+      "ordered": true
+    },
+    {
+      "question": "How many different aircraft types are used across all scheduled flights?",
+      "reference_sql": "SELECT COUNT( DISTINCT f~plane_type_id ) AS aircraft_type_count FROM /dmo/flight AS f",
+      "ordered": false
+    }
+  ]
+}

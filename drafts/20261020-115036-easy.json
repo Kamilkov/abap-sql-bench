@@ -1,0 +1,9 @@
+{
+  "items": [
+    {
+      "question": "How many scheduled flights are there in October 2026?",
+      "reference_sql": "SELECT COUNT(*) AS flight_count FROM /DMO/FLIGHT AS f WHERE f~flight_date BETWEEN '20261001' AND '20261031'",
+      "ordered": false
+    }
+  ]
+}

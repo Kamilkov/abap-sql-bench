@@ -1,0 +1,307 @@
+{
+  "meta": {
+    "campaign": "2026-10-20-fixer3",
+    "started": "2026-10-20T18:57:02.872Z",
+    "finished": "2026-10-20T19:04:45.768Z",
+    "testset_sha256": "5399b1890eaf1bc89b8993b11781700ba82b99e969aae9b9ec455b8173709ef1",
+    "fingerprint_captured_at": "2026-10-20T17:22:50.599Z",
+    "answers": {
+      "claude-opus-5-5-high": {
+        "file": "answers/claude-opus-5-5-high.jsonl",
+        "sha256": "5b0754c2fd88476a9afd085c564a15fb8a228e787339160aa99630ffa25c4134"
+      },
+      "claude-opus-5-5-high-shuffled": {
+        "file": "answers/claude-opus-5-5-high-shuffled.jsonl",
+        "sha256": "a8397d5f9c56ed963f2c71ce09e00cae12b83f71dc38b8de63ea985aa5763fa4"
+      },
+      "qwen3-4b-instruct-2507-q8_0": {
+        "file": "answers/qwen3-4b-instruct-2507-q8_0.jsonl",
+        "sha256": "24303c31fbc28552a7b1d9a7a3271dafbb91ca2616b791491e9d72ec922bedab"
+      },
+      "qwen3-4b-instruct-2507-q8_0-fewshot": {
+        "file": "answers/qwen3-4b-instruct-2507-q8_0-fewshot.jsonl",
+        "sha256": "fbffe0c300694d8b72117dcf58ce394229025e6d60b35809618d806ea03d1f50"
+      },
+      "qwen3-4b-instruct-2507-q8_0-fixed": {
+        "file": "answers/qwen3-4b-instruct-2507-q8_0-fixed.jsonl",
+        "sha256": "4ad9749ae8eae253d0c014d5f8bdac13690cfa1d0f005070be1a8d307f610240"
+      },
+      "qwen3-4b-instruct-2507-q8_0-fewshot-fixed": {
+        "file": "answers/qwen3-4b-instruct-2507-q8_0-fewshot-fixed.jsonl",
+        "sha256": "e73d4854b093c614a8e409c3b6924e92e33839cd14bce4891c5d21c4f3650eca"
+      }
+    }
+  },
+  "summary": {
+    "claude-opus-5-5-high": {
+      "n": 308,
+      "pass": 308,
+      "accuracy": 1,
+      "tiers": {
+        "easy": {
+          "n": 93,
+          "pass": 93,
+          "accuracy": 1
+        },
+        "medium": {
+          "n": 106,
+          "pass": 106,
+          "accuracy": 1
+        },
+        "hard": {
+          "n": 77,
+          "pass": 77,
+          "accuracy": 1
+        },
+        "unanswerable": {
+          "n": 32,
+          "pass": 32,
+          "accuracy": 1
+        }
+      },
+      "unanswerable": {
+        "said": 32,
+        "precision": 1,
+        "recall": 1
+      },
+      "sql_answers": 276,
+      "sql_errors": 0,
+      "sql_error_rate": 0,
+      "foreign": 0,
+      "dumps": 0,
+      "gen_ms": {
+        "median": 3472,
+        "p95": 8415
+      },
+      "exec_ms": {
+        "median": 246,
+        "p95": 398
+      }
+    },
+    "claude-opus-5-5-high-shuffled": {
+      "n": 308,
+      "pass": 32,
+      "accuracy": 0.1038961038961039,
+      "tiers": {
+        "easy": {
+          "n": 93,
+          "pass": 0,
+          "accuracy": 0
+        },
+        "medium": {
+          "n": 106,
+          "pass": 0,
+          "accuracy": 0
+        },
+        "hard": {
+          "n": 77,
+          "pass": 0,
+          "accuracy": 0
+        },
+        "unanswerable": {
+          "n": 32,
+          "pass": 32,
+          "accuracy": 1
+        }
+      },
+      "unanswerable": {
+        "said": 32,
+        "precision": 1,
+        "recall": 1
+      },
+      "sql_answers": 276,
+      "sql_errors": 0,
+      "sql_error_rate": 0,
+      "foreign": 0,
+      "dumps": 0,
+      "gen_ms": {
+        "median": 3472,
+        "p95": 8415
+      },
+      "exec_ms": {
+        "median": 251,
+        "p95": 385
+      }
+    },
+    "qwen3-4b-instruct-2507-q8_0": {
+      "n": 308,
+      "pass": 45,
+      "accuracy": 0.1461038961038961,
+      "tiers": {
+        "easy": {
+          "n": 93,
+          "pass": 15,
+          "accuracy": 0.16129032258064516
+        },
+        "medium": {
+          "n": 106,
+          "pass": 0,
+          "accuracy": 0
+        },
+        "hard": {
+          "n": 77,
+          "pass": 0,
+          "accuracy": 0
+        },
+        "unanswerable": {
+          "n": 32,
+          "pass": 30,
+          "accuracy": 0.9375
+        }
+      },
+      "unanswerable": {
+        "said": 30,
+        "precision": 1,
+        "recall": 0.9375
+      },
+      "sql_answers": 277,
+      "sql_errors": 259,
+      "sql_error_rate": 0.9350180505415162,
+      "foreign": 2,
+      "dumps": 32,
+      "gen_ms": {
+        "median": 4270,
+        "p95": 8006
+      },
+      "exec_ms": {
+        "median": 94,
+        "p95": 225
+      }
+    },
+    "qwen3-4b-instruct-2507-q8_0-fewshot": {
+      "n": 308,
+      "pass": 89,
+      "accuracy": 0.288961038961039,
+      "tiers": {
+        "easy": {
+          "n": 93,
+          "pass": 48,
+          "accuracy": 0.5161290322580645
+        },
+        "medium": {
+          "n": 106,
+          "pass": 10,
+          "accuracy": 0.09433962264150944
+        },
+        "hard": {
+          "n": 77,
+          "pass": 2,
+          "accuracy": 0.025974025974025976
+        },
+        "unanswerable": {
+          "n": 32,
+          "pass": 29,
+          "accuracy": 0.90625
+        }
+      },
+      "unanswerable": {
+        "said": 36,
+        "precision": 0.8055555555555556,
+        "recall": 0.90625
+      },
+      "sql_answers": 272,
+      "sql_errors": 190,
+      "sql_error_rate": 0.6985294117647058,
+      "foreign": 5,
+      "dumps": 1,
+      "gen_ms": {
+        "median": 3721,
+        "p95": 8189
+      },
+      "exec_ms": {
+        "median": 194,
+        "p95": 313
+      }
+    },
+    "qwen3-4b-instruct-2507-q8_0-fixed": {
+      "n": 308,
+      "pass": 163,
+      "accuracy": 0.5292207792207793,
+      "tiers": {
+        "easy": {
+          "n": 93,
+          "pass": 68,
+          "accuracy": 0.7311827956989247
+        },
+        "medium": {
+          "n": 106,
+          "pass": 53,
+          "accuracy": 0.5
+        },
+        "hard": {
+          "n": 77,
+          "pass": 12,
+          "accuracy": 0.15584415584415584
+        },
+        "unanswerable": {
+          "n": 32,
+          "pass": 30,
+          "accuracy": 0.9375
+        }
+      },
+      "unanswerable": {
+        "said": 30,
+        "precision": 1,
+        "recall": 0.9375
+      },
+      "sql_answers": 277,
+      "sql_errors": 89,
+      "sql_error_rate": 0.3212996389891697,
+      "foreign": 2,
+      "dumps": 3,
+      "gen_ms": {
+        "median": 4270,
+        "p95": 8006
+      },
+      "exec_ms": {
+        "median": 252,
+        "p95": 414
+      }
+    },
+    "qwen3-4b-instruct-2507-q8_0-fewshot-fixed": {
+      "n": 308,
+      "pass": 162,
+      "accuracy": 0.525974025974026,
+      "tiers": {
+        "easy": {
+          "n": 93,
+          "pass": 73,
+          "accuracy": 0.7849462365591398
+        },
+        "medium": {
+          "n": 106,
+          "pass": 45,
+          "accuracy": 0.42452830188679247
+        },
+        "hard": {
+          "n": 77,
+          "pass": 15,
+          "accuracy": 0.19480519480519481
+        },
+        "unanswerable": {
+          "n": 32,
+          "pass": 29,
+          "accuracy": 0.90625
+        }
+      },
+      "unanswerable": {
+        "said": 36,
+        "precision": 0.8055555555555556,
+        "recall": 0.90625
+      },
+      "sql_answers": 272,
+      "sql_errors": 74,
+      "sql_error_rate": 0.27205882352941174,
+      "foreign": 5,
+      "dumps": 4,
+      "gen_ms": {
+        "median": 3721,
+        "p95": 8189
+      },
+      "exec_ms": {
+        "median": 245,
+        "p95": 417
+      }
+    }
+  }
+}

@@ -1,0 +1,54 @@
+{
+  "items": [
+    {
+      "question": "Which 10 passengers have bookings on the most different aircraft types? Return customer IDs, first and last names, and aircraft type counts, most types first, then by customer ID.",
+      "reference_sql": "SELECT c~customer_id, c~first_name, c~last_name, COUNT( DISTINCT f~plane_type_id ) AS aircraft_type_count FROM /dmo/customer AS c INNER JOIN /dmo/booking AS b ON b~customer_id = c~customer_id INNER JOIN /dmo/flight AS f ON f~carrier_id = b~carrier_id AND f~connection_id = b~connection_id AND f~flight_date = b~flight_date GROUP BY c~customer_id, c~first_name, c~last_name ORDER BY aircraft_type_count DESCENDING, c~customer_id ASCENDING UP TO 10 ROWS",
+      "ordered": true
+    },
+    {
+      "question": "For each trip status and departure airport, show the status code, airport code, number of flight bookings, and number of distinct trips containing those bookings.",
+      "reference_sql": "SELECT t~status, c~airport_from_id, COUNT(*) AS booking_count, COUNT( DISTINCT t~travel_id ) AS trip_count FROM /dmo/travel AS t INNER JOIN /dmo/booking AS b ON b~travel_id = t~travel_id INNER JOIN /dmo/connection AS c ON c~carrier_id = b~carrier_id AND c~connection_id = b~connection_id GROUP BY t~status, c~airport_from_id",
+      "ordered": false
+    },
+    {
+      "question": "How many trips were handled by an agency in the same country as the trip customer? Return country codes, trip counts, and distinct customer counts.",
+      "reference_sql": "SELECT c~country_code, COUNT(*) AS trip_count, COUNT( DISTINCT c~customer_id ) AS customer_count FROM /dmo/travel AS t INNER JOIN /dmo/agency AS a ON a~agency_id = t~agency_id INNER JOIN /dmo/customer AS c ON c~customer_id = t~customer_id WHERE a~country_code = c~country_code GROUP BY c~country_code",
+      "ordered": false
+    },
+    {
+      "question": "Which 10 pairs of airlines have the most booked passengers in common? Return both airline codes and shared-passenger counts, with the alphabetically earlier airline code first. Sort by most shared passengers, then by the first and second airline codes.",
+      "reference_sql": "SELECT b1~carrier_id AS first_airline, b2~carrier_id AS second_airline, COUNT( DISTINCT b1~customer_id ) AS shared_passenger_count FROM /dmo/booking AS b1 INNER JOIN /dmo/booking AS b2 ON b2~customer_id = b1~customer_id AND b1~carrier_id < b2~carrier_id GROUP BY b1~carrier_id, b2~carrier_id ORDER BY shared_passenger_count DESCENDING, first_airline ASCENDING, second_airline ASCENDING UP TO 10 ROWS",
+      "ordered": true
+    },
+    {
+      "question": "Which 10 trips include the widest variety of purchased add-on categories? Return trip IDs, agency IDs, category counts, and purchased add-on entry counts, most categories first, then by trip ID.",
+      "reference_sql": "SELECT t~travel_id, t~agency_id, COUNT( DISTINCT s~supplement_category ) AS category_count, COUNT(*) AS entry_count FROM /dmo/travel AS t INNER JOIN /dmo/book_suppl AS bs ON bs~travel_id = t~travel_id INNER JOIN /dmo/supplement AS s ON s~supplement_id = bs~supplement_id GROUP BY t~travel_id, t~agency_id ORDER BY category_count DESCENDING, t~travel_id ASCENDING UP TO 10 ROWS",
+      "ordered": true
+    },
+    {
+      "question": "For each aircraft type, show the number of scheduled flights and occupied seats as a percentage of total seat capacity, rounded to 2 decimals.",
+      "reference_sql": "SELECT f~plane_type_id, COUNT(*) AS flight_count, DIVISION( SUM( f~seats_occupied ) * 100, SUM( f~seats_max ), 2 ) AS occupancy_percentage FROM /dmo/flight AS f GROUP BY f~plane_type_id",
+      "ordered": false
+    },
+    {
+      "question": "For each destination country represented in flight bookings, show its country code, number of distinct passengers, number of flight bookings, and number of different airlines booked.",
+      "reference_sql": "SELECT a~country, COUNT( DISTINCT b~customer_id ) AS passenger_count, COUNT(*) AS booking_count, COUNT( DISTINCT b~carrier_id ) AS airline_count FROM /dmo/booking AS b INNER JOIN /dmo/connection AS c ON c~carrier_id = b~carrier_id AND c~connection_id = b~connection_id INNER JOIN /dmo/airport AS a ON a~airport_id = c~airport_to_id GROUP BY a~country",
+      "ordered": false
+    },
+    {
+      "question": "Which 10 trips have flight bookings for the most distinct passengers? Return trip IDs, agency names, passenger counts, and flight booking counts, most passengers first, then by trip ID.",
+      "reference_sql": "SELECT t~travel_id, a~name AS agency_name, COUNT( DISTINCT b~customer_id ) AS passenger_count, COUNT(*) AS booking_count FROM /dmo/travel AS t INNER JOIN /dmo/agency AS a ON a~agency_id = t~agency_id INNER JOIN /dmo/booking AS b ON b~travel_id = t~travel_id GROUP BY t~travel_id, a~name ORDER BY passenger_count DESCENDING, t~travel_id ASCENDING UP TO 10 ROWS",
+      "ordered": true
+    },
+    {
+      "question": "For each airline with listed connections, show its code and name and how many different departure times and arrival times appear in its timetable.",
+      "reference_sql": "SELECT a~carrier_id, a~name, COUNT( DISTINCT c~departure_time ) AS departure_time_count, COUNT( DISTINCT c~arrival_time ) AS arrival_time_count FROM /dmo/carrier AS a INNER JOIN /dmo/connection AS c ON c~carrier_id = a~carrier_id GROUP BY a~carrier_id, a~name",
+      "ordered": false
+    },
+    {
+      "question": "Show 10 airline and airport-pair combinations where the airline offers connections in both directions. Return airline codes and names and both airport codes, putting the alphabetically earlier airport first. Sort by airline code, then by the first and second airport codes.",
+      "reference_sql": "SELECT DISTINCT a~carrier_id, a~name, c1~airport_from_id AS first_airport, c1~airport_to_id AS second_airport FROM /dmo/carrier AS a INNER JOIN /dmo/connection AS c1 ON c1~carrier_id = a~carrier_id INNER JOIN /dmo/connection AS c2 ON c2~carrier_id = c1~carrier_id AND c2~airport_from_id = c1~airport_to_id AND c2~airport_to_id = c1~airport_from_id WHERE c1~airport_from_id < c1~airport_to_id ORDER BY a~carrier_id ASCENDING, first_airport ASCENDING, second_airport ASCENDING UP TO 10 ROWS",
+      "ordered": true
+    }
+  ]
+}

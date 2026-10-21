@@ -1,0 +1,20 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["answers"],
+  "properties": {
+    "answers": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "ordering", "evidence"],
+        "properties": {
+          "id": { "type": "string" },
+          "ordering": { "type": "string", "enum": ["ordered", "unordered", "ambiguous"] },
+          "evidence": { "type": "string" }
+        }
+      }
+    }
+  }
+}

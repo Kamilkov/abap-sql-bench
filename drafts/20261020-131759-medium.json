@@ -1,0 +1,54 @@
+{
+  "items": [
+    {
+      "question": "For each airline connection scheduled in October 2026, show the airline code and name, connection number, number of scheduled flights, and number of those flights with at least one recorded booking.",
+      "reference_sql": "SELECT f~carrier_id, c~name, f~connection_id, COUNT( DISTINCT f~flight_date ) AS scheduled_flights, COUNT( DISTINCT b~flight_date ) AS flights_with_bookings FROM /dmo/flight AS f INNER JOIN /dmo/carrier AS c ON c~carrier_id = f~carrier_id LEFT OUTER JOIN /dmo/booking AS b ON b~carrier_id = f~carrier_id AND b~connection_id = f~connection_id AND b~flight_date = f~flight_date WHERE f~flight_date BETWEEN '20261001' AND '20261031' GROUP BY f~carrier_id, c~name, f~connection_id",
+      "ordered": false
+    },
+    {
+      "question": "Which combinations of trip currency and flight booking currency occur? Return both currency codes, the number of flight bookings, and the number of distinct trips for each combination.",
+      "reference_sql": "SELECT t~currency_code AS trip_currency, b~currency_code AS booking_currency, COUNT(*) AS booking_count, COUNT( DISTINCT t~travel_id ) AS trip_count FROM /dmo/travel AS t INNER JOIN /dmo/booking AS b ON b~travel_id = t~travel_id GROUP BY t~currency_code, b~currency_code",
+      "ordered": false
+    },
+    {
+      "question": "Which 10 aircraft type and add-on combinations have the most purchased add-on entries? Return aircraft types, add-on codes, and entry counts, most entries first, then alphabetically by aircraft type and add-on code.",
+      "reference_sql": "SELECT f~plane_type_id, s~supplement_id, COUNT(*) AS entry_count FROM /dmo/book_suppl AS s INNER JOIN /dmo/booking AS b ON b~travel_id = s~travel_id AND b~booking_id = s~booking_id INNER JOIN /dmo/flight AS f ON f~carrier_id = b~carrier_id AND f~connection_id = b~connection_id AND f~flight_date = b~flight_date GROUP BY f~plane_type_id, s~supplement_id ORDER BY entry_count DESCENDING, f~plane_type_id ASCENDING, s~supplement_id ASCENDING UP TO 10 ROWS",
+      "ordered": true
+    },
+    {
+      "question": "Which 10 agencies have sold the widest variety of add-ons across their trips? Return agency IDs, names, distinct add-on counts, and purchased entry counts, most distinct add-ons first, then by agency ID.",
+      "reference_sql": "SELECT a~agency_id, a~name, COUNT( DISTINCT s~supplement_id ) AS addon_count, COUNT(*) AS entry_count FROM /dmo/agency AS a INNER JOIN /dmo/travel AS t ON t~agency_id = a~agency_id INNER JOIN /dmo/book_suppl AS s ON s~travel_id = t~travel_id GROUP BY a~agency_id, a~name ORDER BY addon_count DESCENDING, a~agency_id ASCENDING UP TO 10 ROWS",
+      "ordered": true
+    },
+    {
+      "question": "What total distance has been booked with each airline, counting the connection distance once per flight booking? Return airline codes and names, distance units, booking counts, and total distances, separately by distance unit.",
+      "reference_sql": "SELECT c~carrier_id, c~name, n~distance_unit, COUNT(*) AS booking_count, SUM( n~distance ) AS total_distance FROM /dmo/booking AS b INNER JOIN /dmo/connection AS n ON n~carrier_id = b~carrier_id AND n~connection_id = b~connection_id INNER JOIN /dmo/carrier AS c ON c~carrier_id = b~carrier_id GROUP BY c~carrier_id, c~name, n~distance_unit",
+      "ordered": false
+    },
+    {
+      "question": "Which 10 trips have the largest difference between their highest and lowest US-dollar flight booking charges? Return trip IDs, agency names, both charges, and the difference, largest difference first, then by trip ID.",
+      "reference_sql": "SELECT t~travel_id, a~name, MIN( b~flight_price ) AS lowest_charge, MAX( b~flight_price ) AS highest_charge, MAX( b~flight_price ) - MIN( b~flight_price ) AS charge_difference FROM /dmo/travel AS t INNER JOIN /dmo/agency AS a ON a~agency_id = t~agency_id INNER JOIN /dmo/booking AS b ON b~travel_id = t~travel_id WHERE b~currency_code = 'USD' GROUP BY t~travel_id, a~name ORDER BY charge_difference DESCENDING, t~travel_id ASCENDING UP TO 10 ROWS",
+      "ordered": true
+    },
+    {
+      "question": "Which 10 surnames appear on the most customer records? Return surnames, customer counts, and the number of different home countries, most customers first, then alphabetically by surname.",
+      "reference_sql": "SELECT c~last_name, COUNT(*) AS customer_count, COUNT( DISTINCT c~country_code ) AS country_count FROM /dmo/customer AS c GROUP BY c~last_name ORDER BY customer_count DESCENDING, c~last_name ASCENDING UP TO 10 ROWS",
+      "ordered": true
+    },
+    {
+      "question": "Which 10 flight dates have the most unoccupied seats in total? Return dates, flight counts, and total unoccupied seats, most unoccupied seats first, then earliest date.",
+      "reference_sql": "SELECT f~flight_date, COUNT(*) AS flight_count, SUM( f~seats_max ) - SUM( f~seats_occupied ) AS unoccupied_seats FROM /dmo/flight AS f GROUP BY f~flight_date ORDER BY unoccupied_seats DESCENDING, f~flight_date ASCENDING UP TO 10 ROWS",
+      "ordered": true
+    },
+    {
+      "question": "Which 10 airport pairs have the highest total US-dollar flight booking charges, keeping each direction separate? Return departure and arrival airport codes, booking counts, and total charges in dollars, highest total first, then by departure and arrival code.",
+      "reference_sql": "SELECT n~airport_from_id, n~airport_to_id, COUNT(*) AS booking_count, SUM( b~flight_price ) AS total_charges FROM /dmo/booking AS b INNER JOIN /dmo/connection AS n ON n~carrier_id = b~carrier_id AND n~connection_id = b~connection_id WHERE b~currency_code = 'USD' GROUP BY n~airport_from_id, n~airport_to_id ORDER BY total_charges DESCENDING, n~airport_from_id ASCENDING, n~airport_to_id ASCENDING UP TO 10 ROWS",
+      "ordered": true
+    },
+    {
+      "question": "Which 10 airline connections have the largest difference between their highest and lowest occupied-seat counts across scheduled flights? Return airline codes and names, connection numbers, departure and arrival airport codes, both seat counts, and the difference, largest difference first, then by airline code and connection number.",
+      "reference_sql": "SELECT c~carrier_id, c~name, n~connection_id, n~airport_from_id, n~airport_to_id, MIN( f~seats_occupied ) AS lowest_occupied, MAX( f~seats_occupied ) AS highest_occupied, MAX( f~seats_occupied ) - MIN( f~seats_occupied ) AS seat_difference FROM /dmo/flight AS f INNER JOIN /dmo/connection AS n ON n~carrier_id = f~carrier_id AND n~connection_id = f~connection_id INNER JOIN /dmo/carrier AS c ON c~carrier_id = f~carrier_id GROUP BY c~carrier_id, c~name, n~connection_id, n~airport_from_id, n~airport_to_id ORDER BY seat_difference DESCENDING, c~carrier_id ASCENDING, n~connection_id ASCENDING UP TO 10 ROWS",
+      "ordered": true
+    }
+  ]
+}

@@ -1,0 +1,54 @@
+{
+  "items": [
+    {
+      "question": "Which 10 agency–customer pairs account for the most trips? Return agency IDs and names, customer IDs and full names, and trip counts, most trips first, then by agency ID and customer ID.",
+      "reference_sql": "SELECT a~agency_id, a~name, c~customer_id, c~first_name, c~last_name, COUNT(*) AS trip_count FROM /dmo/travel AS t INNER JOIN /dmo/agency AS a ON a~agency_id = t~agency_id INNER JOIN /dmo/customer AS c ON c~customer_id = t~customer_id GROUP BY a~agency_id, a~name, c~customer_id, c~first_name, c~last_name ORDER BY trip_count DESCENDING, a~agency_id ASCENDING, c~customer_id ASCENDING UP TO 10 ROWS",
+      "ordered": true
+    },
+    {
+      "question": "Which 10 flights have bookings from passengers living in the most different countries? Return airline codes and names, connection numbers, flight dates, country counts, and booking counts, most countries first, then by flight date, airline code, and connection number.",
+      "reference_sql": "SELECT b~carrier_id, a~name, b~connection_id, b~flight_date, COUNT(DISTINCT c~country_code) AS country_count, COUNT(*) AS booking_count FROM /dmo/booking AS b INNER JOIN /dmo/customer AS c ON c~customer_id = b~customer_id INNER JOIN /dmo/carrier AS a ON a~carrier_id = b~carrier_id GROUP BY b~carrier_id, a~name, b~connection_id, b~flight_date ORDER BY country_count DESCENDING, b~flight_date ASCENDING, b~carrier_id ASCENDING, b~connection_id ASCENDING UP TO 10 ROWS",
+      "ordered": true
+    },
+    {
+      "question": "Which cities have more than one listed airport? Return city names, country codes, and airport counts.",
+      "reference_sql": "SELECT a~city, a~country, COUNT(*) AS airport_count FROM /dmo/airport AS a GROUP BY a~city, a~country HAVING COUNT(*) > 1",
+      "ordered": false
+    },
+    {
+      "question": "For each airline with scheduled flights, show its code and name, its first and last scheduled flight dates, and the number of different dates on which it has flights.",
+      "reference_sql": "SELECT c~carrier_id, c~name, MIN(f~flight_date) AS first_flight_date, MAX(f~flight_date) AS last_flight_date, COUNT(DISTINCT f~flight_date) AS flight_date_count FROM /dmo/carrier AS c INNER JOIN /dmo/flight AS f ON f~carrier_id = c~carrier_id GROUP BY c~carrier_id, c~name",
+      "ordered": false
+    },
+    {
+      "question": "Which 10 add-ons have been purchased for the most different passengers? Return add-on codes, category codes, passenger counts, and purchased entry counts, most passengers first, then by add-on code.",
+      "reference_sql": "SELECT s~supplement_id, s~supplement_category, COUNT(DISTINCT b~customer_id) AS passenger_count, COUNT(*) AS entry_count FROM /dmo/book_suppl AS x INNER JOIN /dmo/booking AS b ON b~travel_id = x~travel_id AND b~booking_id = x~booking_id INNER JOIN /dmo/supplement AS s ON s~supplement_id = x~supplement_id GROUP BY s~supplement_id, s~supplement_category ORDER BY passenger_count DESCENDING, s~supplement_id ASCENDING UP TO 10 ROWS",
+      "ordered": true
+    },
+    {
+      "question": "For each aircraft type and booking currency, show the aircraft type, currency, number of flight bookings, and total recorded flight charges.",
+      "reference_sql": "SELECT f~plane_type_id, b~currency_code, COUNT(*) AS booking_count, SUM(b~flight_price) AS total_flight_charges FROM /dmo/booking AS b INNER JOIN /dmo/flight AS f ON f~carrier_id = b~carrier_id AND f~connection_id = b~connection_id AND f~flight_date = b~flight_date GROUP BY f~plane_type_id, b~currency_code",
+      "ordered": false
+    },
+    {
+      "question": "Which 10 airline connections use the widest variety of aircraft types across their scheduled flights? Return airline codes and names, connection numbers, departure and arrival airport codes, and aircraft type counts, most types first, then by airline code and connection number.",
+      "reference_sql": "SELECT c~carrier_id, c~name, n~connection_id, n~airport_from_id, n~airport_to_id, COUNT(DISTINCT f~plane_type_id) AS aircraft_type_count FROM /dmo/connection AS n INNER JOIN /dmo/carrier AS c ON c~carrier_id = n~carrier_id INNER JOIN /dmo/flight AS f ON f~carrier_id = n~carrier_id AND f~connection_id = n~connection_id GROUP BY c~carrier_id, c~name, n~connection_id, n~airport_from_id, n~airport_to_id ORDER BY aircraft_type_count DESCENDING, c~carrier_id ASCENDING, n~connection_id ASCENDING UP TO 10 ROWS",
+      "ordered": true
+    },
+    {
+      "question": "Which 10 trips include bookings with the most different airlines? Return trip IDs, agency names, airline counts, and flight booking counts, most airlines first, then by trip ID.",
+      "reference_sql": "SELECT t~travel_id, a~name, COUNT(DISTINCT b~carrier_id) AS airline_count, COUNT(*) AS booking_count FROM /dmo/travel AS t INNER JOIN /dmo/agency AS a ON a~agency_id = t~agency_id INNER JOIN /dmo/booking AS b ON b~travel_id = t~travel_id GROUP BY t~travel_id, a~name ORDER BY airline_count DESCENDING, t~travel_id ASCENDING UP TO 10 ROWS",
+      "ordered": true
+    },
+    {
+      "question": "For each country with travel agencies, how many agencies have handled at least one trip and how many have handled none? Return country codes and both counts.",
+      "reference_sql": "SELECT a~country_code, COUNT(DISTINCT t~agency_id) AS agencies_with_trips, COUNT(DISTINCT a~agency_id) - COUNT(DISTINCT t~agency_id) AS agencies_without_trips FROM /dmo/agency AS a LEFT OUTER JOIN /dmo/travel AS t ON t~agency_id = a~agency_id GROUP BY a~country_code",
+      "ordered": false
+    },
+    {
+      "question": "For each country containing listed airports, show the country code, the total number of airports, and the number that serve as departure airports for listed connections.",
+      "reference_sql": "SELECT a~country, COUNT(DISTINCT a~airport_id) AS airport_count, COUNT(DISTINCT c~airport_from_id) AS departure_airport_count FROM /dmo/airport AS a LEFT OUTER JOIN /dmo/connection AS c ON c~airport_from_id = a~airport_id GROUP BY a~country",
+      "ordered": false
+    }
+  ]
+}

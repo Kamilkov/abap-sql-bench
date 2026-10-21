@@ -1,0 +1,5 @@
+# Training venv (torch comes from the PyTorch Pod image). Versions pinned 2026-10-20.
+transformers==5.20.2
+peft==0.21.2
+accelerate==1.15.0
+jinja2

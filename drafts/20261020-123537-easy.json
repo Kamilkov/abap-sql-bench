@@ -1,0 +1,54 @@
+{
+  "items": [
+    {
+      "question": "Show the 10 flights with the fewest unoccupied seats, including airline codes, route numbers, dates and unoccupied seat counts. Sort by unoccupied seats, fewest first, then date, airline code and route number.",
+      "reference_sql": "SELECT carrier_id, connection_id, flight_date, seats_max - seats_occupied AS unoccupied_seats FROM /dmo/flight ORDER BY unoccupied_seats ASCENDING, flight_date ASCENDING, carrier_id ASCENDING, connection_id ASCENDING UP TO 10 ROWS",
+      "ordered": true
+    },
+    {
+      "question": "On which 5 dates were the most flight bookings made? Show booking dates and booking counts, largest count first, then earliest date.",
+      "reference_sql": "SELECT booking_date, COUNT(*) AS booking_count FROM /dmo/booking GROUP BY booking_date ORDER BY booking_count DESCENDING, booking_date ASCENDING UP TO 5 ROWS",
+      "ordered": true
+    },
+    {
+      "question": "Which 10 airline routes have the most flight bookings? Show airline codes, route numbers and booking counts, largest count first, then airline code and route number.",
+      "reference_sql": "SELECT carrier_id, connection_id, COUNT(*) AS booking_count FROM /dmo/booking GROUP BY carrier_id, connection_id ORDER BY booking_count DESCENDING, carrier_id ASCENDING, connection_id ASCENDING UP TO 10 ROWS",
+      "ordered": true
+    },
+    {
+      "question": "How many available extras are in each category? Show category codes and extra counts.",
+      "reference_sql": "SELECT supplement_category, COUNT(*) AS extra_count FROM /dmo/supplement GROUP BY supplement_category",
+      "ordered": false
+    },
+    {
+      "question": "Which 5 countries have the most airports listed? Show country codes and airport counts, largest count first, then country code.",
+      "reference_sql": "SELECT country, COUNT(*) AS airport_count FROM /dmo/airport GROUP BY country ORDER BY airport_count DESCENDING, country ASCENDING UP TO 5 ROWS",
+      "ordered": true
+    },
+    {
+      "question": "How many airline routes are listed in total?",
+      "reference_sql": "SELECT COUNT(*) AS route_count FROM /dmo/connection",
+      "ordered": false
+    },
+    {
+      "question": "Which 10 customers have the most trips? Show customer numbers and trip counts, largest count first, then customer number.",
+      "reference_sql": "SELECT customer_id, COUNT(*) AS trip_count FROM /dmo/travel GROUP BY customer_id ORDER BY trip_count DESCENDING, customer_id ASCENDING UP TO 10 ROWS",
+      "ordered": true
+    },
+    {
+      "question": "How many different countries are the travel agencies based in?",
+      "reference_sql": "SELECT COUNT(DISTINCT country_code) AS country_count FROM /dmo/agency",
+      "ordered": false
+    },
+    {
+      "question": "How many trips start on each date in October 2026? Show start dates and trip counts, earliest date first.",
+      "reference_sql": "SELECT begin_date, COUNT(*) AS trip_count FROM /dmo/travel WHERE begin_date >= '20261001' AND begin_date < '20261101' GROUP BY begin_date ORDER BY begin_date ASCENDING",
+      "ordered": true
+    },
+    {
+      "question": "How many different aircraft types does each airline use for its scheduled flights? Show airline codes and aircraft type counts.",
+      "reference_sql": "SELECT carrier_id, COUNT(DISTINCT plane_type_id) AS aircraft_type_count FROM /dmo/flight GROUP BY carrier_id",
+      "ordered": false
+    }
+  ]
+}

@@ -1,0 +1,54 @@
+{
+  "items": [
+    {
+      "question": "How many trips are recorded in total?",
+      "reference_sql": "SELECT COUNT(*) AS trip_count FROM /DMO/TRAVEL",
+      "ordered": false
+    },
+    {
+      "question": "How many different customers have trips recorded?",
+      "reference_sql": "SELECT COUNT( DISTINCT t~customer_id ) AS customer_count FROM /DMO/TRAVEL AS t",
+      "ordered": false
+    },
+    {
+      "question": "Which 10 customers have the most flight bookings? Show customer numbers and booking counts, largest count first, then by customer number.",
+      "reference_sql": "SELECT b~customer_id, COUNT(*) AS booking_count FROM /DMO/BOOKING AS b GROUP BY b~customer_id ORDER BY booking_count DESCENDING, b~customer_id ASCENDING UP TO 10 ROWS",
+      "ordered": true
+    },
+    {
+      "question": "Which 5 airports have the most routes arriving at them? Show airport codes and route counts, largest count first, then by airport code.",
+      "reference_sql": "SELECT c~airport_to_id, COUNT(*) AS route_count FROM /DMO/CONNECTION AS c GROUP BY c~airport_to_id ORDER BY route_count DESCENDING, c~airport_to_id ASCENDING UP TO 5 ROWS",
+      "ordered": true
+    },
+    {
+      "question": "How many flight bookings are priced in each currency? Show currency codes and booking counts.",
+      "reference_sql": "SELECT b~currency_code, COUNT(*) AS booking_count FROM /DMO/BOOKING AS b GROUP BY b~currency_code",
+      "ordered": false
+    },
+    {
+      "question": "What are the 10 most common booking fee and currency combinations for trips? Show fees, currency codes and trip counts, largest count first, then by currency code and lowest fee.",
+      "reference_sql": "SELECT t~booking_fee, t~currency_code, COUNT(*) AS trip_count FROM /DMO/TRAVEL AS t GROUP BY t~booking_fee, t~currency_code ORDER BY trip_count DESCENDING, t~currency_code ASCENDING, t~booking_fee ASCENDING UP TO 10 ROWS",
+      "ordered": true
+    },
+    {
+      "question": "What are the 10 most common ticket price and currency combinations in the flight schedule? Show prices, currency codes and flight counts, largest count first, then by currency code and lowest price.",
+      "reference_sql": "SELECT f~price, f~currency_code, COUNT(*) AS flight_count FROM /DMO/FLIGHT AS f GROUP BY f~price, f~currency_code ORDER BY flight_count DESCENDING, f~currency_code ASCENDING, f~price ASCENDING UP TO 10 ROWS",
+      "ordered": true
+    },
+    {
+      "question": "How many different airlines use each aircraft type in the flight schedule? Show aircraft types and airline counts.",
+      "reference_sql": "SELECT f~plane_type_id, COUNT( DISTINCT f~carrier_id ) AS airline_count FROM /DMO/FLIGHT AS f GROUP BY f~plane_type_id",
+      "ordered": false
+    },
+    {
+      "question": "For each category of available extras, how many different prices are offered in each currency? Show category codes, currency codes and distinct price counts.",
+      "reference_sql": "SELECT s~supplement_category, s~currency_code, COUNT( DISTINCT s~price ) AS price_count FROM /DMO/SUPPLEMENT AS s GROUP BY s~supplement_category, s~currency_code",
+      "ordered": false
+    },
+    {
+      "question": "How many different extras does each airline booking include? Show trip numbers, booking numbers and distinct extra counts for the 10 bookings with the widest variety, largest count first, then by trip number and booking number.",
+      "reference_sql": "SELECT s~travel_id, s~booking_id, COUNT( DISTINCT s~supplement_id ) AS extra_count FROM /DMO/BOOK_SUPPL AS s GROUP BY s~travel_id, s~booking_id ORDER BY extra_count DESCENDING, s~travel_id ASCENDING, s~booking_id ASCENDING UP TO 10 ROWS",
+      "ordered": true
+    }
+  ]
+}

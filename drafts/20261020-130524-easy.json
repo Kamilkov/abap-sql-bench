@@ -1,0 +1,54 @@
+{
+  "items": [
+    {
+      "question": "How many customers are recorded in total?",
+      "reference_sql": "SELECT COUNT(*) AS customer_count FROM /DMO/CUSTOMER",
+      "ordered": false
+    },
+    {
+      "question": "How many distinct postal codes are recorded for customers in each country? Show country codes and postal code counts.",
+      "reference_sql": "SELECT country_code, COUNT( DISTINCT postal_code ) AS postal_code_count FROM /DMO/CUSTOMER GROUP BY country_code",
+      "ordered": false
+    },
+    {
+      "question": "How many different customers have flight bookings with each airline? Show airline codes and customer counts.",
+      "reference_sql": "SELECT carrier_id, COUNT( DISTINCT customer_id ) AS customer_count FROM /DMO/BOOKING GROUP BY carrier_id",
+      "ordered": false
+    },
+    {
+      "question": "How many different departure airports does each airline use for its listed routes? Show airline codes and airport counts.",
+      "reference_sql": "SELECT carrier_id, COUNT( DISTINCT airport_from_id ) AS airport_count FROM /DMO/CONNECTION GROUP BY carrier_id",
+      "ordered": false
+    },
+    {
+      "question": "What are the earliest and latest scheduled flight dates for each airline? Show airline codes and both dates.",
+      "reference_sql": "SELECT carrier_id, MIN( flight_date ) AS earliest_flight_date, MAX( flight_date ) AS latest_flight_date FROM /DMO/FLIGHT GROUP BY carrier_id",
+      "ordered": false
+    },
+    {
+      "question": "What are the shortest and longest listed route distances in each measurement unit? Show unit codes and both distances.",
+      "reference_sql": "SELECT distance_unit, MIN( distance ) AS shortest_distance, MAX( distance ) AS longest_distance FROM /DMO/CONNECTION GROUP BY distance_unit",
+      "ordered": false
+    },
+    {
+      "question": "What are the lowest and highest prices for available extras within each currency? Show currency codes and both prices.",
+      "reference_sql": "SELECT currency_code, MIN( price ) AS lowest_price, MAX( price ) AS highest_price FROM /DMO/SUPPLEMENT GROUP BY currency_code",
+      "ordered": false
+    },
+    {
+      "question": "Which 10 customers have trips through the most different agencies? Show customer numbers and agency counts, highest count first, then by customer number.",
+      "reference_sql": "SELECT customer_id, COUNT( DISTINCT agency_id ) AS agency_count FROM /DMO/TRAVEL GROUP BY customer_id ORDER BY agency_count DESCENDING, customer_id ASCENDING UP TO 10 ROWS",
+      "ordered": true
+    },
+    {
+      "question": "Which 10 trips have the most extras added to their bookings? Show trip numbers and extra counts, highest count first, then by trip number.",
+      "reference_sql": "SELECT travel_id, COUNT(*) AS extra_count FROM /DMO/BOOK_SUPPL GROUP BY travel_id ORDER BY extra_count DESCENDING, travel_id ASCENDING UP TO 10 ROWS",
+      "ordered": true
+    },
+    {
+      "question": "Which 10 customers have bookings for the most distinct flight dates? Show customer numbers and date counts, highest count first, then by customer number.",
+      "reference_sql": "SELECT customer_id, COUNT( DISTINCT flight_date ) AS flight_date_count FROM /DMO/BOOKING GROUP BY customer_id ORDER BY flight_date_count DESCENDING, customer_id ASCENDING UP TO 10 ROWS",
+      "ordered": true
+    }
+  ]
+}

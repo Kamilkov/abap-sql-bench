@@ -1,0 +1,54 @@
+{
+  "items": [
+    {
+      "question": "Which 10 customers have the most different passengers booked across their trips? Return customer IDs, first and last names, and passenger counts, most passengers first, then by customer ID.",
+      "reference_sql": "SELECT c~customer_id, c~first_name, c~last_name, COUNT( DISTINCT b~customer_id ) AS passenger_count FROM /dmo/customer AS c INNER JOIN /dmo/travel AS t ON t~customer_id = c~customer_id INNER JOIN /dmo/booking AS b ON b~travel_id = t~travel_id GROUP BY c~customer_id, c~first_name, c~last_name ORDER BY passenger_count DESCENDING, c~customer_id ASCENDING UP TO 10 ROWS",
+      "ordered": true
+    },
+    {
+      "question": "Which 10 pairs of different add-ons appear together on the most trips? Return both add-on codes and shared trip counts, with the alphabetically earlier code first in each pair. Sort by most trips, then by the first and second codes.",
+      "reference_sql": "SELECT a~supplement_id AS first_add_on, b~supplement_id AS second_add_on, COUNT( DISTINCT a~travel_id ) AS trip_count FROM /dmo/book_suppl AS a INNER JOIN /dmo/book_suppl AS b ON b~travel_id = a~travel_id AND a~supplement_id < b~supplement_id GROUP BY a~supplement_id, b~supplement_id ORDER BY trip_count DESCENDING, a~supplement_id ASCENDING, b~supplement_id ASCENDING UP TO 10 ROWS",
+      "ordered": true
+    },
+    {
+      "question": "Which 10 pairs of airlines share the most departure airports in their listed connections? Return both airline codes and shared airport counts, with the alphabetically earlier airline code first. Sort by most shared airports, then by the first and second airline codes.",
+      "reference_sql": "SELECT a~carrier_id AS first_airline, b~carrier_id AS second_airline, COUNT( DISTINCT a~airport_from_id ) AS shared_airport_count FROM /dmo/connection AS a INNER JOIN /dmo/connection AS b ON b~airport_from_id = a~airport_from_id AND a~carrier_id < b~carrier_id GROUP BY a~carrier_id, b~carrier_id ORDER BY shared_airport_count DESCENDING, a~carrier_id ASCENDING, b~carrier_id ASCENDING UP TO 10 ROWS",
+      "ordered": true
+    },
+    {
+      "question": "Which 10 aircraft type and seating capacity combinations appear on the most scheduled flights? Return aircraft types, seating capacities, and flight counts, most flights first, then by aircraft type and seating capacity.",
+      "reference_sql": "SELECT f~plane_type_id, f~seats_max, COUNT(*) AS flight_count FROM /dmo/flight AS f GROUP BY f~plane_type_id, f~seats_max ORDER BY flight_count DESCENDING, f~plane_type_id ASCENDING, f~seats_max ASCENDING UP TO 10 ROWS",
+      "ordered": true
+    },
+    {
+      "question": "For each country where customers live, show its country code and the numbers of customers and listed travel agencies. Include countries with no agencies.",
+      "reference_sql": "SELECT c~country_code, COUNT( DISTINCT c~customer_id ) AS customer_count, COUNT( DISTINCT a~agency_id ) AS agency_count FROM /dmo/customer AS c LEFT OUTER JOIN /dmo/agency AS a ON a~country_code = c~country_code GROUP BY c~country_code",
+      "ordered": false
+    },
+    {
+      "question": "Which countries have more than 10 customers? Return country codes and customer counts.",
+      "reference_sql": "SELECT c~country_code, COUNT(*) AS customer_count FROM /dmo/customer AS c GROUP BY c~country_code HAVING COUNT(*) > 10",
+      "ordered": false
+    },
+    {
+      "question": "Which currencies are used by at least three airlines? Return currency codes and airline counts.",
+      "reference_sql": "SELECT c~currency_code, COUNT(*) AS airline_count FROM /dmo/carrier AS c GROUP BY c~currency_code HAVING COUNT(*) >= 3",
+      "ordered": false
+    },
+    {
+      "question": "For every catalog add-on, show its code, category code, and the number of languages in which it has a description. Include add-ons without descriptions.",
+      "reference_sql": "SELECT s~supplement_id, s~supplement_category, COUNT( DISTINCT t~language_code ) AS language_count FROM /dmo/supplement AS s LEFT OUTER JOIN /dmo/suppl_text AS t ON t~supplement_id = s~supplement_id GROUP BY s~supplement_id, s~supplement_category",
+      "ordered": false
+    },
+    {
+      "question": "How many customers are recorded under each personal title? Return titles and customer counts, including a group for customers without a title.",
+      "reference_sql": "SELECT c~title, COUNT(*) AS customer_count FROM /dmo/customer AS c GROUP BY c~title",
+      "ordered": false
+    },
+    {
+      "question": "Which 10 trip start and end date combinations are most common? Return both dates and trip counts, most trips first, then by start date and end date.",
+      "reference_sql": "SELECT t~begin_date, t~end_date, COUNT(*) AS trip_count FROM /dmo/travel AS t GROUP BY t~begin_date, t~end_date ORDER BY trip_count DESCENDING, t~begin_date ASCENDING, t~end_date ASCENDING UP TO 10 ROWS",
+      "ordered": true
+    }
+  ]
+}

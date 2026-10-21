@@ -1,0 +1,29 @@
+{
+  "items": [
+    {
+      "question": "For flights departing in July 2026, list each carrier's name and average departure delay in minutes, rounded to 2 decimals.",
+      "reference_sql": null,
+      "ordered": false
+    },
+    {
+      "question": "How many checked bags were reported lost on flights arriving at London Heathrow in August 2026?",
+      "reference_sql": null,
+      "ordered": false
+    },
+    {
+      "question": "How many loyalty points did customers redeem for flight bookings made in September 2026?",
+      "reference_sql": null,
+      "ordered": false
+    },
+    {
+      "question": "For bookings made in June 2026, list each payment method and the number of bookings paid for using that method.",
+      "reference_sql": null,
+      "ordered": false
+    },
+    {
+      "question": "How many liters of fuel did Lufthansa flights consume in October 2026, rounded to 2 decimals?",
+      "reference_sql": null,
+      "ordered": false
+    }
+  ]
+}

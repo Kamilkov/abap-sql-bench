@@ -1,0 +1,54 @@
+{
+  "items": [
+    {
+      "question": "Show the 10 cheapest flights priced in euros in October 2026, including airline codes, route numbers, dates and prices. Sort by price, lowest first, then date, airline code and route number.",
+      "reference_sql": "SELECT carrier_id, connection_id, flight_date, price FROM /dmo/flight WHERE currency_code = 'EUR' AND flight_date BETWEEN '20261001' AND '20261031' ORDER BY price ASCENDING, flight_date ASCENDING, carrier_id ASCENDING, connection_id ASCENDING UP TO 10 ROWS",
+      "ordered": true
+    },
+    {
+      "question": "What are the 5 most common customer last names? Show each last name and customer count, largest count first, then alphabetically by last name.",
+      "reference_sql": "SELECT last_name, COUNT(*) AS customer_count FROM /dmo/customer GROUP BY last_name ORDER BY customer_count DESCENDING, last_name ASCENDING UP TO 5 ROWS",
+      "ordered": true
+    },
+    {
+      "question": "List up to 20 routes departing from noon to before 6 p.m., showing airline codes, route numbers, departure airport codes and departure times. Sort by departure time, earliest first, then airline code and route number.",
+      "reference_sql": "SELECT carrier_id, connection_id, airport_from_id, departure_time FROM /dmo/connection WHERE departure_time >= '120000' AND departure_time < '180000' ORDER BY departure_time ASCENDING, carrier_id ASCENDING, connection_id ASCENDING UP TO 20 ROWS",
+      "ordered": true
+    },
+    {
+      "question": "How many travel agencies are listed?",
+      "reference_sql": "SELECT COUNT(*) AS agency_count FROM /dmo/agency",
+      "ordered": false
+    },
+    {
+      "question": "Which 10 trips have the most flight bookings? Show trip numbers and booking counts, largest count first, then by trip number.",
+      "reference_sql": "SELECT travel_id, COUNT(*) AS booking_count FROM /dmo/booking GROUP BY travel_id ORDER BY booking_count DESCENDING, travel_id ASCENDING UP TO 10 ROWS",
+      "ordered": true
+    },
+    {
+      "question": "Show the 10 earliest flight bookings by booking date, including trip numbers, booking numbers, customer numbers and booking dates. Break ties by trip number, then booking number.",
+      "reference_sql": "SELECT travel_id, booking_id, customer_id, booking_date FROM /dmo/booking ORDER BY booking_date ASCENDING, travel_id ASCENDING, booking_id ASCENDING UP TO 10 ROWS",
+      "ordered": true
+    },
+    {
+      "question": "How many scheduled flights use each combination of aircraft type and seating capacity? Show aircraft types, seating capacities and flight counts.",
+      "reference_sql": "SELECT plane_type_id, seats_max, COUNT(*) AS flight_count FROM /dmo/flight GROUP BY plane_type_id, seats_max",
+      "ordered": false
+    },
+    {
+      "question": "How many customers have each recorded title? Show titles and customer counts, including a group for blank titles.",
+      "reference_sql": "SELECT title, COUNT(*) AS customer_count FROM /dmo/customer GROUP BY title",
+      "ordered": false
+    },
+    {
+      "question": "How many different destination airports do the listed routes serve?",
+      "reference_sql": "SELECT COUNT( DISTINCT airport_to_id ) AS destination_count FROM /dmo/connection",
+      "ordered": false
+    },
+    {
+      "question": "How many trips are priced in each currency? Show currency codes and trip counts.",
+      "reference_sql": "SELECT currency_code, COUNT(*) AS trip_count FROM /dmo/travel GROUP BY currency_code",
+      "ordered": false
+    }
+  ]
+}

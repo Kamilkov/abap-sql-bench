@@ -1,0 +1,14 @@
+{
+  "items": [
+    {
+      "question": "List the 5 routes with the earliest departure times, showing the airline code, route number, departure and arrival airport codes, and departure time. Sort by departure time, earliest first, then by airline code and route number, both ascending.",
+      "reference_sql": "SELECT c~carrier_id, c~connection_id, c~airport_from_id, c~airport_to_id, c~departure_time FROM /dmo/connection AS c ORDER BY c~departure_time ASCENDING, c~carrier_id ASCENDING, c~connection_id ASCENDING UP TO 5 ROWS",
+      "ordered": true
+    },
+    {
+      "question": "How many canceled trips have a start date in June 2026?",
+      "reference_sql": "SELECT COUNT(*) AS trip_count FROM /dmo/travel AS t WHERE t~status = 'X' AND t~begin_date BETWEEN '20260601' AND '20260630'",
+      "ordered": false
+    }
+  ]
+}

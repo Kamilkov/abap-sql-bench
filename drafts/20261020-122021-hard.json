@@ -1,0 +1,54 @@
+{
+  "items": [
+    {
+      "question": "For each airline, how many flights in October 2026 have no bookings? Return airline codes, names, and flight counts, including only airlines with such flights.",
+      "reference_sql": "SELECT c~carrier_id, c~name, COUNT(*) AS flight_count FROM /dmo/carrier AS c INNER JOIN /dmo/flight AS f ON f~carrier_id = c~carrier_id WHERE f~flight_date BETWEEN '20261001' AND '20261031' AND NOT EXISTS ( SELECT * FROM /dmo/booking AS b WHERE b~carrier_id = f~carrier_id AND b~connection_id = f~connection_id AND b~flight_date = f~flight_date ) GROUP BY c~carrier_id, c~name",
+      "ordered": false
+    },
+    {
+      "question": "For each agency, show its two most expensive euro-priced trips starting in June 2026, or its only one if it has just one. Break price ties by lowest trip number. Return agency numbers, names, trip numbers, and total prices in euros. Sort by agency number, then price highest first, then trip number.",
+      "reference_sql": "SELECT a~agency_id, a~name, t~travel_id, t~total_price FROM /dmo/agency AS a INNER JOIN /dmo/travel AS t ON t~agency_id = a~agency_id WHERE t~begin_date BETWEEN '20260601' AND '20260630' AND t~currency_code = 'EUR' AND 2 > ( SELECT COUNT(*) FROM /dmo/travel AS x WHERE x~agency_id = t~agency_id AND x~begin_date BETWEEN '20260601' AND '20260630' AND x~currency_code = 'EUR' AND ( x~total_price > t~total_price OR ( x~total_price = t~total_price AND x~travel_id < t~travel_id ) ) ) ORDER BY a~agency_id ASCENDING, t~total_price DESCENDING, t~travel_id ASCENDING",
+      "ordered": true
+    },
+    {
+      "question": "For trips starting in April 2027, show each currency's total trip prices separately for booked trips and trips with other statuses.",
+      "reference_sql": "SELECT t~currency_code, SUM( CASE WHEN t~status = 'B' THEN t~total_price ELSE 0 END ) AS booked_total, SUM( CASE WHEN t~status <> 'B' THEN t~total_price ELSE 0 END ) AS other_status_total FROM /dmo/travel AS t WHERE t~begin_date BETWEEN '20270401' AND '20270430' GROUP BY t~currency_code",
+      "ordered": false
+    },
+    {
+      "question": "Which trips starting in February 2027 continue into March or beyond? Return trip numbers, start dates, end dates, and the number of days between the start and end.",
+      "reference_sql": "SELECT t~travel_id, t~begin_date, t~end_date, DATS_DAYS_BETWEEN( t~begin_date, t~end_date ) AS duration_days FROM /dmo/travel AS t WHERE t~begin_date BETWEEN '20270201' AND '20270228' AND t~end_date >= '20270301'",
+      "ordered": false
+    },
+    {
+      "question": "For each agency handling trips starting in June 2026, show its number and name and separate trip counts for customers from Germany, the United States, and all other countries.",
+      "reference_sql": "SELECT a~agency_id, a~name, SUM( CASE WHEN c~country_code = 'DE' THEN 1 ELSE 0 END ) AS germany_trips, SUM( CASE WHEN c~country_code = 'US' THEN 1 ELSE 0 END ) AS united_states_trips, SUM( CASE WHEN c~country_code <> 'DE' AND c~country_code <> 'US' THEN 1 ELSE 0 END ) AS other_country_trips FROM /dmo/agency AS a INNER JOIN /dmo/travel AS t ON t~agency_id = a~agency_id INNER JOIN /dmo/customer AS c ON c~customer_id = t~customer_id WHERE t~begin_date BETWEEN '20260601' AND '20260630' GROUP BY a~agency_id, a~name",
+      "ordered": false
+    },
+    {
+      "question": "Among flight bookings with at least two purchased extras priced in US dollars, which 10 have the lowest total charges for those extras? Return trip numbers, booking numbers, extra counts, and total extra charges in US dollars. Sort by total charges, lowest first, then trip number and booking number.",
+      "reference_sql": "SELECT s~travel_id, s~booking_id, COUNT(*) AS extra_count, SUM( s~price ) AS total_extra_charges_usd FROM /dmo/book_suppl AS s WHERE s~currency_code = 'USD' GROUP BY s~travel_id, s~booking_id HAVING COUNT(*) >= 2 ORDER BY total_extra_charges_usd ASCENDING, s~travel_id ASCENDING, s~booking_id ASCENDING UP TO 10 ROWS",
+      "ordered": true
+    },
+    {
+      "question": "For each customer country, which customers have the most trips? Include everyone tied for first place. Return country codes, customer numbers, first and last names, and trip counts.",
+      "reference_sql": "SELECT c~country_code, c~customer_id, c~first_name, c~last_name, COUNT(*) AS trip_count FROM /dmo/customer AS c INNER JOIN /dmo/travel AS t ON t~customer_id = c~customer_id GROUP BY c~country_code, c~customer_id, c~first_name, c~last_name HAVING COUNT(*) >= ALL ( SELECT COUNT(*) FROM /dmo/customer AS x INNER JOIN /dmo/travel AS y ON y~customer_id = x~customer_id WHERE x~country_code = c~country_code GROUP BY x~customer_id )",
+      "ordered": false
+    },
+    {
+      "question": "Which trips starting in October 2026 include flight bookings with more than one airline? Return trip numbers, the number of airlines, and the number of flight bookings.",
+      "reference_sql": "SELECT t~travel_id, COUNT( DISTINCT b~carrier_id ) AS airline_count, COUNT(*) AS booking_count FROM /dmo/travel AS t INNER JOIN /dmo/booking AS b ON b~travel_id = t~travel_id WHERE t~begin_date BETWEEN '20261001' AND '20261031' GROUP BY t~travel_id HAVING COUNT( DISTINCT b~carrier_id ) > 1",
+      "ordered": false
+    },
+    {
+      "question": "For each airline and currency, how many October 2026 flights cost less than that airline's average flight price in the same currency that month, and how many empty seats do those flights have in total? Return airline codes, names, currencies, flight counts, and empty-seat totals, including only groups with qualifying flights.",
+      "reference_sql": "SELECT c~carrier_id, c~name, f~currency_code, COUNT(*) AS flight_count, SUM( f~seats_max - f~seats_occupied ) AS empty_seat_count FROM /dmo/carrier AS c INNER JOIN /dmo/flight AS f ON f~carrier_id = c~carrier_id WHERE f~flight_date BETWEEN '20261001' AND '20261031' AND f~price < ( SELECT AVG( x~price ) FROM /dmo/flight AS x WHERE x~carrier_id = f~carrier_id AND x~currency_code = f~currency_code AND x~flight_date BETWEEN '20261001' AND '20261031' ) GROUP BY c~carrier_id, c~name, f~currency_code",
+      "ordered": false
+    },
+    {
+      "question": "For each airline, compare occupied seats on October 1 and October 31, 2026, for connections flown on both dates. Return airline codes, names, the number of connections with an increase, and the number without an increase.",
+      "reference_sql": "SELECT c~carrier_id, c~name, SUM( CASE WHEN last_f~seats_occupied > first_f~seats_occupied THEN 1 ELSE 0 END ) AS increased_connections, SUM( CASE WHEN last_f~seats_occupied <= first_f~seats_occupied THEN 1 ELSE 0 END ) AS other_connections FROM /dmo/carrier AS c INNER JOIN /dmo/flight AS first_f ON first_f~carrier_id = c~carrier_id INNER JOIN /dmo/flight AS last_f ON last_f~carrier_id = first_f~carrier_id AND last_f~connection_id = first_f~connection_id WHERE first_f~flight_date = '20261001' AND last_f~flight_date = '20261031' GROUP BY c~carrier_id, c~name",
+      "ordered": false
+    }
+  ]
+}

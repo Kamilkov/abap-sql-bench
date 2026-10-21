@@ -1,0 +1,54 @@
+{
+  "items": [
+    {
+      "question": "How many extras have been added to bookings in total?",
+      "reference_sql": "SELECT COUNT(*) AS extra_count FROM /DMO/BOOK_SUPPL",
+      "ordered": false
+    },
+    {
+      "question": "How many different extra options have been added to bookings?",
+      "reference_sql": "SELECT COUNT( DISTINCT supplement_id ) AS distinct_extra_count FROM /DMO/BOOK_SUPPL",
+      "ordered": false
+    },
+    {
+      "question": "How many agencies have at least one trip recorded?",
+      "reference_sql": "SELECT COUNT( DISTINCT agency_id ) AS agency_count FROM /DMO/TRAVEL",
+      "ordered": false
+    },
+    {
+      "question": "How many trips include at least one flight booking?",
+      "reference_sql": "SELECT COUNT( DISTINCT travel_id ) AS trip_count FROM /DMO/BOOKING",
+      "ordered": false
+    },
+    {
+      "question": "On how many different dates are flights scheduled in the first quarter of 2027?",
+      "reference_sql": "SELECT COUNT( DISTINCT flight_date ) AS flight_date_count FROM /DMO/FLIGHT WHERE flight_date BETWEEN '20270101' AND '20270331'",
+      "ordered": false
+    },
+    {
+      "question": "Which 10 cities have the most customers? Show cities, country codes and customer counts, largest count first, then by country code and city.",
+      "reference_sql": "SELECT city, country_code, COUNT(*) AS customer_count FROM /DMO/CUSTOMER GROUP BY city, country_code ORDER BY customer_count DESCENDING, country_code ASCENDING, city ASCENDING UP TO 10 ROWS",
+      "ordered": true
+    },
+    {
+      "question": "How many scheduled flights are priced in each currency? Show currency codes and flight counts.",
+      "reference_sql": "SELECT currency_code, COUNT(*) AS flight_count FROM /DMO/FLIGHT GROUP BY currency_code",
+      "ordered": false
+    },
+    {
+      "question": "How many cities have airports listed in each country? Show country codes and distinct city counts.",
+      "reference_sql": "SELECT country, COUNT( DISTINCT city ) AS city_count FROM /DMO/AIRPORT GROUP BY country",
+      "ordered": false
+    },
+    {
+      "question": "How many agencies are based in each country? Show country codes and agency counts.",
+      "reference_sql": "SELECT country_code, COUNT(*) AS agency_count FROM /DMO/AGENCY GROUP BY country_code",
+      "ordered": false
+    },
+    {
+      "question": "How many trips are booked or planned?",
+      "reference_sql": "SELECT COUNT(*) AS trip_count FROM /DMO/TRAVEL WHERE status IN ( 'B', 'P' )",
+      "ordered": false
+    }
+  ]
+}

@@ -1,0 +1,54 @@
+{
+  "items": [
+    {
+      "question": "What are the earliest and latest recorded booking dates?",
+      "reference_sql": "SELECT MIN( booking_date ) AS earliest_booking_date, MAX( booking_date ) AS latest_booking_date FROM /DMO/BOOKING",
+      "ordered": false
+    },
+    {
+      "question": "Which 10 agencies have served the most distinct customers? Show agency numbers and customer counts, highest count first, then by agency number.",
+      "reference_sql": "SELECT agency_id, COUNT( DISTINCT customer_id ) AS customer_count FROM /DMO/TRAVEL GROUP BY agency_id ORDER BY customer_count DESCENDING, agency_id ASCENDING UP TO 10 ROWS",
+      "ordered": true
+    },
+    {
+      "question": "How many different destination airports can be reached directly from each departure airport? Show departure airport codes and destination counts.",
+      "reference_sql": "SELECT airport_from_id, COUNT( DISTINCT airport_to_id ) AS destination_count FROM /DMO/CONNECTION GROUP BY airport_from_id",
+      "ordered": false
+    },
+    {
+      "question": "How many distinct US cities have an airport listed?",
+      "reference_sql": "SELECT COUNT( DISTINCT city ) AS city_count FROM /DMO/AIRPORT WHERE country = 'US'",
+      "ordered": false
+    },
+    {
+      "question": "Show the 10 flights with the most occupied seats, including airline codes, route numbers, dates and occupied seat counts. Sort by occupied seats, highest first, then by date, airline code and route number.",
+      "reference_sql": "SELECT carrier_id, connection_id, flight_date, seats_occupied FROM /DMO/FLIGHT ORDER BY seats_occupied DESCENDING, flight_date ASCENDING, carrier_id ASCENDING, connection_id ASCENDING UP TO 10 ROWS",
+      "ordered": true
+    },
+    {
+      "question": "How many flight bookings does each airline have? Show airline codes and booking counts.",
+      "reference_sql": "SELECT carrier_id, COUNT(*) AS booking_count FROM /DMO/BOOKING GROUP BY carrier_id",
+      "ordered": false
+    },
+    {
+      "question": "Which units are used to record route distances? Show each unit code once.",
+      "reference_sql": "SELECT DISTINCT distance_unit FROM /DMO/CONNECTION",
+      "ordered": false
+    },
+    {
+      "question": "Break down trips by agency and status. Show agency numbers, status codes and trip counts for the 20 largest groups, highest count first, then by agency number and status code.",
+      "reference_sql": "SELECT agency_id, status, COUNT(*) AS trip_count FROM /DMO/TRAVEL GROUP BY agency_id, status ORDER BY trip_count DESCENDING, agency_id ASCENDING, status ASCENDING UP TO 20 ROWS",
+      "ordered": true
+    },
+    {
+      "question": "How many extras added to bookings are priced in each currency? Show currency codes and extra counts.",
+      "reference_sql": "SELECT currency_code, COUNT(*) AS extra_count FROM /DMO/BOOK_SUPPL GROUP BY currency_code",
+      "ordered": false
+    },
+    {
+      "question": "For each airline, what are the earliest and latest departure times among its listed routes? Show airline codes and both times.",
+      "reference_sql": "SELECT carrier_id, MIN( departure_time ) AS earliest_departure_time, MAX( departure_time ) AS latest_departure_time FROM /DMO/CONNECTION GROUP BY carrier_id",
+      "ordered": false
+    }
+  ]
+}

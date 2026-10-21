@@ -1,0 +1,54 @@
+{
+  "items": [
+    {
+      "question": "Which 10 airline connections have the most flight bookings? Return airline codes and names, connection numbers, departure and arrival airport codes, and booking counts, most bookings first, then by airline code and connection number.",
+      "reference_sql": "SELECT c~carrier_id, c~name, n~connection_id, n~airport_from_id, n~airport_to_id, COUNT(*) AS booking_count FROM /DMO/BOOKING AS b INNER JOIN /DMO/CONNECTION AS n ON n~carrier_id = b~carrier_id AND n~connection_id = b~connection_id INNER JOIN /DMO/CARRIER AS c ON c~carrier_id = n~carrier_id GROUP BY c~carrier_id, c~name, n~connection_id, n~airport_from_id, n~airport_to_id ORDER BY booking_count DESCENDING, c~carrier_id ASCENDING, n~connection_id ASCENDING UP TO 10 ROWS",
+      "ordered": true
+    },
+    {
+      "question": "Which 10 passengers have bookings to the most different destination airports? Return customer IDs, first and last names, and destination counts, most destinations first, then by customer ID.",
+      "reference_sql": "SELECT c~customer_id, c~first_name, c~last_name, COUNT( DISTINCT n~airport_to_id ) AS destination_count FROM /DMO/CUSTOMER AS c INNER JOIN /DMO/BOOKING AS b ON b~customer_id = c~customer_id INNER JOIN /DMO/CONNECTION AS n ON n~carrier_id = b~carrier_id AND n~connection_id = b~connection_id GROUP BY c~customer_id, c~first_name, c~last_name ORDER BY destination_count DESCENDING, c~customer_id ASCENDING UP TO 10 ROWS",
+      "ordered": true
+    },
+    {
+      "question": "Which 10 agencies have the highest total euro-denominated add-on charges across their trips? Return agency IDs, names, and total charges in euros, highest total first, then by agency ID.",
+      "reference_sql": "SELECT a~agency_id, a~name, SUM( s~price ) AS total_add_on_charges FROM /DMO/AGENCY AS a INNER JOIN /DMO/TRAVEL AS t ON t~agency_id = a~agency_id INNER JOIN /DMO/BOOK_SUPPL AS s ON s~travel_id = t~travel_id WHERE s~currency_code = 'EUR' GROUP BY a~agency_id, a~name ORDER BY total_add_on_charges DESCENDING, a~agency_id ASCENDING UP TO 10 ROWS",
+      "ordered": true
+    },
+    {
+      "question": "For each airline and booking currency, show the airline code and name, currency, number of flight bookings, and total recorded flight charges.",
+      "reference_sql": "SELECT c~carrier_id, c~name, b~currency_code, COUNT(*) AS booking_count, SUM( b~flight_price ) AS total_flight_charges FROM /DMO/CARRIER AS c INNER JOIN /DMO/BOOKING AS b ON b~carrier_id = c~carrier_id GROUP BY c~carrier_id, c~name, b~currency_code",
+      "ordered": false
+    },
+    {
+      "question": "For each aircraft type with flight bookings, show the type, number of bookings, and number of distinct passengers.",
+      "reference_sql": "SELECT f~plane_type_id, COUNT(*) AS booking_count, COUNT( DISTINCT b~customer_id ) AS passenger_count FROM /DMO/FLIGHT AS f INNER JOIN /DMO/BOOKING AS b ON b~carrier_id = f~carrier_id AND b~connection_id = f~connection_id AND b~flight_date = f~flight_date GROUP BY f~plane_type_id",
+      "ordered": false
+    },
+    {
+      "question": "Show the 10 earliest-starting trips in December 2026, with trip IDs, start and end dates, agency names, and the trip customers' first and last names. Sort by start date, then by trip ID.",
+      "reference_sql": "SELECT t~travel_id, t~begin_date, t~end_date, a~name AS agency_name, c~first_name, c~last_name FROM /DMO/TRAVEL AS t INNER JOIN /DMO/AGENCY AS a ON a~agency_id = t~agency_id INNER JOIN /DMO/CUSTOMER AS c ON c~customer_id = t~customer_id WHERE t~begin_date BETWEEN '20261201' AND '20261231' ORDER BY t~begin_date ASCENDING, t~travel_id ASCENDING UP TO 10 ROWS",
+      "ordered": true
+    },
+    {
+      "question": "Which 10 flights in October 2026 have the highest listed prices in US dollars? Return airline codes and names, connection numbers, flight dates, departure and arrival airport codes, and prices, highest price first, then by date, airline code, and connection number.",
+      "reference_sql": "SELECT f~carrier_id, c~name, f~connection_id, f~flight_date, n~airport_from_id, n~airport_to_id, f~price FROM /DMO/FLIGHT AS f INNER JOIN /DMO/CARRIER AS c ON c~carrier_id = f~carrier_id INNER JOIN /DMO/CONNECTION AS n ON n~carrier_id = f~carrier_id AND n~connection_id = f~connection_id WHERE f~flight_date BETWEEN '20261001' AND '20261031' AND f~currency_code = 'USD' ORDER BY f~price DESCENDING, f~flight_date ASCENDING, f~carrier_id ASCENDING, f~connection_id ASCENDING UP TO 10 ROWS",
+      "ordered": true
+    },
+    {
+      "question": "Which 10 connections have the latest scheduled arrival times of day? Return airline codes and names, connection numbers, departure and arrival airport codes, and arrival times, latest time first, then by airline code and connection number.",
+      "reference_sql": "SELECT c~carrier_id, c~name, n~connection_id, n~airport_from_id, n~airport_to_id, n~arrival_time FROM /DMO/CONNECTION AS n INNER JOIN /DMO/CARRIER AS c ON c~carrier_id = n~carrier_id ORDER BY n~arrival_time DESCENDING, c~carrier_id ASCENDING, n~connection_id ASCENDING UP TO 10 ROWS",
+      "ordered": true
+    },
+    {
+      "question": "Which 10 departure-country and arrival-country pairs have the most listed connections? Count each airline's numbered connection separately and keep each direction separate. Return both country codes and connection counts, most connections first, then by departure country and arrival country.",
+      "reference_sql": "SELECT d~country AS departure_country, a~country AS arrival_country, COUNT(*) AS connection_count FROM /DMO/CONNECTION AS n INNER JOIN /DMO/AIRPORT AS d ON d~airport_id = n~airport_from_id INNER JOIN /DMO/AIRPORT AS a ON a~airport_id = n~airport_to_id GROUP BY d~country, a~country ORDER BY connection_count DESCENDING, d~country ASCENDING, a~country ASCENDING UP TO 10 ROWS",
+      "ordered": true
+    },
+    {
+      "question": "For each trip currency, show the currency, number of trips, total recorded trip prices, and total booking fees.",
+      "reference_sql": "SELECT t~currency_code, COUNT(*) AS trip_count, SUM( t~total_price ) AS total_trip_prices, SUM( t~booking_fee ) AS total_booking_fees FROM /DMO/TRAVEL AS t GROUP BY t~currency_code",
+      "ordered": false
+    }
+  ]
+}

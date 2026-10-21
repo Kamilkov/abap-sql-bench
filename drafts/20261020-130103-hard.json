@@ -1,0 +1,54 @@
+{
+  "items": [
+    {
+      "question": "Which 20 customers have the most trips that overlap another of their trips, counting shared start or end dates as overlaps? Return customer numbers, first and last names, and overlapping-trip counts, highest count first, then customer number.",
+      "reference_sql": "SELECT c~customer_id, c~first_name, c~last_name, COUNT(*) AS overlapping_trip_count FROM /dmo/customer AS c INNER JOIN /dmo/travel AS t ON t~customer_id = c~customer_id WHERE EXISTS ( SELECT * FROM /dmo/travel AS other WHERE other~customer_id = t~customer_id AND other~travel_id <> t~travel_id AND other~begin_date <= t~end_date AND other~end_date >= t~begin_date ) GROUP BY c~customer_id, c~first_name, c~last_name ORDER BY overlapping_trip_count DESCENDING, c~customer_id ASCENDING UP TO 20 ROWS",
+      "ordered": true
+    },
+    {
+      "question": "Which 20 agencies served the most customers who have also used another agency? Return agency numbers, names, distinct customer counts, and trip counts for those customers. Sort by customer count, highest first, then agency number.",
+      "reference_sql": "SELECT a~agency_id, a~name, COUNT( DISTINCT t~customer_id ) AS customer_count, COUNT(*) AS trip_count FROM /dmo/agency AS a INNER JOIN /dmo/travel AS t ON t~agency_id = a~agency_id WHERE EXISTS ( SELECT * FROM /dmo/travel AS other WHERE other~customer_id = t~customer_id AND other~agency_id <> t~agency_id ) GROUP BY a~agency_id, a~name ORDER BY customer_count DESCENDING, a~agency_id ASCENDING UP TO 20 ROWS",
+      "ordered": true
+    },
+    {
+      "question": "Which 20 trips with the lowest trip numbers have at least one flight booking and all their flight bookings priced in the trip's currency? Return trip numbers, currencies, and flight booking counts, sorted by trip number.",
+      "reference_sql": "SELECT t~travel_id, t~currency_code, COUNT(*) AS booking_count FROM /dmo/travel AS t INNER JOIN /dmo/booking AS b ON b~travel_id = t~travel_id GROUP BY t~travel_id, t~currency_code HAVING SUM( CASE WHEN b~currency_code <> t~currency_code THEN 1 ELSE 0 END ) = 0 ORDER BY t~travel_id ASCENDING UP TO 20 ROWS",
+      "ordered": true
+    },
+    {
+      "question": "For each aircraft type used in October 2026, how many flights depart before noon and how many depart at noon or later? Return aircraft types and both flight counts.",
+      "reference_sql": "SELECT f~plane_type_id, SUM( CASE WHEN n~departure_time < '120000' THEN 1 ELSE 0 END ) AS before_noon_count, SUM( CASE WHEN n~departure_time >= '120000' THEN 1 ELSE 0 END ) AS noon_or_later_count FROM /dmo/flight AS f INNER JOIN /dmo/connection AS n ON n~carrier_id = f~carrier_id AND n~connection_id = f~connection_id WHERE f~flight_date BETWEEN '20261001' AND '20261031' GROUP BY f~plane_type_id",
+      "ordered": false
+    },
+    {
+      "question": "Among trips starting in June 2026 with flight bookings, which 20 have the most days from the trip start to their first flight? Return trip numbers, start dates, first flight dates, and days until the first flight. Sort by days, highest first, then trip number.",
+      "reference_sql": "SELECT t~travel_id, t~begin_date, MIN( b~flight_date ) AS first_flight_date, MIN( dats_days_between( t~begin_date, b~flight_date ) ) AS days_until_first_flight FROM /dmo/travel AS t INNER JOIN /dmo/booking AS b ON b~travel_id = t~travel_id WHERE t~begin_date BETWEEN '20260601' AND '20260630' GROUP BY t~travel_id, t~begin_date ORDER BY days_until_first_flight DESCENDING, t~travel_id ASCENDING UP TO 20 ROWS",
+      "ordered": true
+    },
+    {
+      "question": "Which 20 customers had the longest gap between consecutive distinct trip start dates? Treat trips starting on the same date as one start date. Return customer numbers, first and last names, and their longest gap in days, largest first, then customer number.",
+      "reference_sql": "SELECT c~customer_id, c~first_name, c~last_name, MAX( dats_days_between( earlier~begin_date, later~begin_date ) ) AS longest_gap_days FROM /dmo/customer AS c INNER JOIN /dmo/travel AS earlier ON earlier~customer_id = c~customer_id INNER JOIN /dmo/travel AS later ON later~customer_id = c~customer_id AND later~begin_date > earlier~begin_date WHERE NOT EXISTS ( SELECT * FROM /dmo/travel AS middle_trip WHERE middle_trip~customer_id = c~customer_id AND middle_trip~begin_date > earlier~begin_date AND middle_trip~begin_date < later~begin_date ) GROUP BY c~customer_id, c~first_name, c~last_name ORDER BY longest_gap_days DESCENDING, c~customer_id ASCENDING UP TO 20 ROWS",
+      "ordered": true
+    },
+    {
+      "question": "Within each extra category and purchase currency, which extra generated the highest total charges? Include all ties. Return category codes, currencies, extra codes, purchase counts, and total charges.",
+      "reference_sql": "SELECT p~supplement_category, s~currency_code, s~supplement_id, COUNT(*) AS purchase_count, SUM( s~price ) AS total_charges FROM /dmo/book_suppl AS s INNER JOIN /dmo/supplement AS p ON p~supplement_id = s~supplement_id GROUP BY p~supplement_category, s~currency_code, s~supplement_id HAVING SUM( s~price ) >= ALL ( SELECT SUM( other~price ) FROM /dmo/book_suppl AS other INNER JOIN /dmo/supplement AS other_product ON other_product~supplement_id = other~supplement_id WHERE other_product~supplement_category = p~supplement_category AND other~currency_code = s~currency_code GROUP BY other~supplement_id )",
+      "ordered": false
+    },
+    {
+      "question": "Which 20 customers have the greatest difference between their longest and shortest trips? Measure each trip as the days between its start and end. Return customer numbers, first and last names, shortest and longest durations, and their difference. Sort by the difference, largest first, then customer number.",
+      "reference_sql": "SELECT c~customer_id, c~first_name, c~last_name, MIN( dats_days_between( t~begin_date, t~end_date ) ) AS shortest_days, MAX( dats_days_between( t~begin_date, t~end_date ) ) AS longest_days, MAX( dats_days_between( t~begin_date, t~end_date ) ) - MIN( dats_days_between( t~begin_date, t~end_date ) ) AS duration_difference FROM /dmo/customer AS c INNER JOIN /dmo/travel AS t ON t~customer_id = c~customer_id GROUP BY c~customer_id, c~first_name, c~last_name ORDER BY duration_difference DESCENDING, c~customer_id ASCENDING UP TO 20 ROWS",
+      "ordered": true
+    },
+    {
+      "question": "Which 20 agencies have the highest percentage of trips marked booked? Return agency numbers, names, total trip counts, booked trip counts, and percentages rounded to 2 decimals. Sort by the rounded percentage, highest first, then agency number.",
+      "reference_sql": "SELECT a~agency_id, a~name, COUNT(*) AS trip_count, SUM( CASE WHEN t~status = 'B' THEN 1 ELSE 0 END ) AS booked_trip_count, division( 100 * SUM( CASE WHEN t~status = 'B' THEN 1 ELSE 0 END ), COUNT(*), 2 ) AS booked_percentage FROM /dmo/agency AS a INNER JOIN /dmo/travel AS t ON t~agency_id = a~agency_id GROUP BY a~agency_id, a~name ORDER BY booked_percentage DESCENDING, a~agency_id ASCENDING UP TO 20 ROWS",
+      "ordered": true
+    },
+    {
+      "question": "Which 20 trips have the largest booking fee as a percentage of their total price? Return trip numbers, currencies, booking fees, total prices, and percentages rounded to 2 decimals. Sort by the rounded percentage, highest first, then trip number.",
+      "reference_sql": "SELECT t~travel_id, t~currency_code, t~booking_fee, t~total_price, division( 100 * t~booking_fee, t~total_price, 2 ) AS booking_fee_percentage FROM /dmo/travel AS t ORDER BY booking_fee_percentage DESCENDING, t~travel_id ASCENDING UP TO 20 ROWS",
+      "ordered": true
+    }
+  ]
+}

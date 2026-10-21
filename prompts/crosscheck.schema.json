@@ -1,0 +1,19 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["answers"],
+  "properties": {
+    "answers": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "sql"],
+        "properties": {
+          "id": { "type": "string" },
+          "sql": { "type": ["string", "null"] }
+        }
+      }
+    }
+  }
+}

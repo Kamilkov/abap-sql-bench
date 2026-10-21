@@ -1,0 +1,54 @@
+{
+  "items": [
+    {
+      "question": "For flights in October 2026, list each carrier's name and the number of distinct pilots assigned to its flights.",
+      "reference_sql": null,
+      "ordered": false
+    },
+    {
+      "question": "How many passengers had window seats on flights in November 2026?",
+      "reference_sql": null,
+      "ordered": false
+    },
+    {
+      "question": "For flights in December 2026, list each carrier's name and its average passenger meal rating, rounded to 2 decimals.",
+      "reference_sql": null,
+      "ordered": false
+    },
+    {
+      "question": "How many flights in September 2026 took off during thunderstorms at their departure airport?",
+      "reference_sql": null,
+      "ordered": false
+    },
+    {
+      "question": "For flights in January 2027, list each carrier's name and the number of passengers who used onboard Wi-Fi.",
+      "reference_sql": null,
+      "ordered": false
+    },
+    {
+      "question": "How many customers on trips starting in October 2026 had passports that expired before their trip ended?",
+      "reference_sql": null,
+      "ordered": false
+    },
+    {
+      "question": "For flights in February 2027, list each carrier's name and the number of flights that used a jet bridge for boarding.",
+      "reference_sql": null,
+      "ordered": false
+    },
+    {
+      "question": "How many passengers checked in online for flights in December 2026?",
+      "reference_sql": null,
+      "ordered": false
+    },
+    {
+      "question": "For November 2026, list each departure airport's name and its average security screening wait in minutes, rounded to 2 decimals.",
+      "reference_sql": null,
+      "ordered": false
+    },
+    {
+      "question": "For flights scheduled in January 2027, list each carrier's name and the number of flights canceled because of mechanical problems.",
+      "reference_sql": null,
+      "ordered": false
+    }
+  ]
+}

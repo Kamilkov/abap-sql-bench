@@ -1,0 +1,20 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["items"],
+  "properties": {
+    "items": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["question", "sql", "ordered"],
+        "properties": {
+          "question": { "type": "string" },
+          "sql": { "type": ["string", "null"] },
+          "ordered": { "type": "boolean" }
+        }
+      }
+    }
+  }
+}

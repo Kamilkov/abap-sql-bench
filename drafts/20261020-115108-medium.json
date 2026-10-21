@@ -1,0 +1,9 @@
+{
+  "items": [
+    {
+      "question": "For each destination country, how many flights are scheduled to arrive in October 2026, and how many seats on those flights are unoccupied? Return country codes, flight counts, and total unoccupied seats.",
+      "reference_sql": "SELECT a~country, COUNT(*) AS flight_count, SUM( f~seats_max - f~seats_occupied ) AS unoccupied_seats FROM /dmo/flight AS f INNER JOIN /dmo/connection AS c ON c~carrier_id = f~carrier_id AND c~connection_id = f~connection_id INNER JOIN /dmo/airport AS a ON a~airport_id = c~airport_to_id WHERE f~flight_date BETWEEN '20261001' AND '20261031' GROUP BY a~country",
+      "ordered": false
+    }
+  ]
+}

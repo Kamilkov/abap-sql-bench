@@ -1,0 +1,54 @@
+{
+  "items": [
+    {
+      "question": "For each flight connection in October 2026, which flight had the most occupied seats? Break ties by earliest date. Return carrier code, connection number, flight date, occupied seats, and seat capacity, sorted by carrier code, connection number, then date.",
+      "reference_sql": "SELECT f~carrier_id, f~connection_id, f~flight_date, f~seats_occupied, f~seats_max FROM /dmo/flight AS f WHERE f~flight_date BETWEEN '20261001' AND '20261031' AND NOT EXISTS ( SELECT * FROM /dmo/flight AS g WHERE g~carrier_id = f~carrier_id AND g~connection_id = f~connection_id AND g~flight_date BETWEEN '20261001' AND '20261031' AND ( g~seats_occupied > f~seats_occupied OR ( g~seats_occupied = f~seats_occupied AND g~flight_date < f~flight_date ) ) ) ORDER BY f~carrier_id ASCENDING, f~connection_id ASCENDING, f~flight_date ASCENDING",
+      "ordered": true
+    },
+    {
+      "question": "Which agencies handled at least three trips starting in October 2026? Return agency numbers, names, trip counts, and distinct customer counts.",
+      "reference_sql": "SELECT a~agency_id, a~name, COUNT(*) AS trip_count, COUNT( DISTINCT t~customer_id ) AS customer_count FROM /dmo/agency AS a INNER JOIN /dmo/travel AS t ON t~agency_id = a~agency_id WHERE t~begin_date BETWEEN '20261001' AND '20261031' GROUP BY a~agency_id, a~name HAVING COUNT(*) >= 3",
+      "ordered": false
+    },
+    {
+      "question": "Which customers had at least three trips starting in June 2026? Return customer numbers, first and last names, trip counts, and the number of different agencies they used for those trips.",
+      "reference_sql": "SELECT c~customer_id, c~first_name, c~last_name, COUNT(*) AS trip_count, COUNT( DISTINCT t~agency_id ) AS agency_count FROM /dmo/customer AS c INNER JOIN /dmo/travel AS t ON t~customer_id = c~customer_id WHERE t~begin_date BETWEEN '20260601' AND '20260630' GROUP BY c~customer_id, c~first_name, c~last_name HAVING COUNT(*) >= 3",
+      "ordered": false
+    },
+    {
+      "question": "Which currencies were used by at least two carriers for flights in October 2026? Return each currency, the number of carriers, and the lowest and highest flight prices in that currency.",
+      "reference_sql": "SELECT f~currency_code, COUNT( DISTINCT f~carrier_id ) AS carrier_count, MIN( f~price ) AS lowest_price, MAX( f~price ) AS highest_price FROM /dmo/flight AS f WHERE f~flight_date BETWEEN '20261001' AND '20261031' GROUP BY f~currency_code HAVING COUNT( DISTINCT f~carrier_id ) >= 2",
+      "ordered": false
+    },
+    {
+      "question": "For each carrier with flights in November 2026, how many flights were at least 90% full and how many were below 90% full? Return carrier codes, names, and both flight counts.",
+      "reference_sql": "SELECT c~carrier_id, c~name, SUM( CASE WHEN f~seats_occupied * 10 >= f~seats_max * 9 THEN 1 ELSE 0 END ) AS flights_at_least_90_percent, SUM( CASE WHEN f~seats_occupied * 10 < f~seats_max * 9 THEN 1 ELSE 0 END ) AS flights_below_90_percent FROM /dmo/carrier AS c INNER JOIN /dmo/flight AS f ON f~carrier_id = c~carrier_id WHERE f~flight_date BETWEEN '20261101' AND '20261130' GROUP BY c~carrier_id, c~name",
+      "ordered": false
+    },
+    {
+      "question": "Which departure airports had flights operated by at least two carriers in October 2026? Return airport codes, names, carrier counts, and scheduled flight counts.",
+      "reference_sql": "SELECT a~airport_id, a~name, COUNT( DISTINCT f~carrier_id ) AS carrier_count, COUNT(*) AS flight_count FROM /dmo/airport AS a INNER JOIN /dmo/connection AS n ON n~airport_from_id = a~airport_id INNER JOIN /dmo/flight AS f ON f~carrier_id = n~carrier_id AND f~connection_id = n~connection_id WHERE f~flight_date BETWEEN '20261001' AND '20261031' GROUP BY a~airport_id, a~name HAVING COUNT( DISTINCT f~carrier_id ) >= 2",
+      "ordered": false
+    },
+    {
+      "question": "For each trip status, show the longest trip starting in October 2026, choosing the lowest trip number if tied. Return the status code, trip number, start and end dates, and the number of days between those dates.",
+      "reference_sql": "SELECT t~status, t~travel_id, t~begin_date, t~end_date, DATS_DAYS_BETWEEN( t~begin_date, t~end_date ) AS duration_days FROM /dmo/travel AS t WHERE t~begin_date BETWEEN '20261001' AND '20261031' AND NOT EXISTS ( SELECT * FROM /dmo/travel AS u WHERE u~status = t~status AND u~begin_date BETWEEN '20261001' AND '20261031' AND ( DATS_DAYS_BETWEEN( u~begin_date, u~end_date ) > DATS_DAYS_BETWEEN( t~begin_date, t~end_date ) OR ( DATS_DAYS_BETWEEN( u~begin_date, u~end_date ) = DATS_DAYS_BETWEEN( t~begin_date, t~end_date ) AND u~travel_id < t~travel_id ) ) )",
+      "ordered": false
+    },
+    {
+      "question": "Which agencies booked flights with at least three different carriers for trips starting in October 2026? Return agency numbers, names, the number of carriers, and the number of flight bookings for those trips.",
+      "reference_sql": "SELECT a~agency_id, a~name, COUNT( DISTINCT b~carrier_id ) AS carrier_count, COUNT(*) AS booking_count FROM /dmo/agency AS a INNER JOIN /dmo/travel AS t ON t~agency_id = a~agency_id INNER JOIN /dmo/booking AS b ON b~travel_id = t~travel_id WHERE t~begin_date BETWEEN '20261001' AND '20261031' GROUP BY a~agency_id, a~name HAVING COUNT( DISTINCT b~carrier_id ) >= 3",
+      "ordered": false
+    },
+    {
+      "question": "For each customer with a trip starting in April 2027, show their latest-starting trip that month, choosing the highest trip number if tied. Return customer number, first and last names, trip number, and start date.",
+      "reference_sql": "SELECT c~customer_id, c~first_name, c~last_name, t~travel_id, t~begin_date FROM /dmo/customer AS c INNER JOIN /dmo/travel AS t ON t~customer_id = c~customer_id WHERE t~begin_date BETWEEN '20270401' AND '20270430' AND NOT EXISTS ( SELECT * FROM /dmo/travel AS u WHERE u~customer_id = t~customer_id AND u~begin_date BETWEEN '20270401' AND '20270430' AND ( u~begin_date > t~begin_date OR ( u~begin_date = t~begin_date AND u~travel_id > t~travel_id ) ) )",
+      "ordered": false
+    },
+    {
+      "question": "For each currency used by trips starting in October or November 2026, show the total trip prices for each month and the change from October to November. Keep currencies separate.",
+      "reference_sql": "SELECT t~currency_code, SUM( CASE WHEN t~begin_date BETWEEN '20261001' AND '20261031' THEN t~total_price ELSE 0 END ) AS october_total, SUM( CASE WHEN t~begin_date BETWEEN '20261101' AND '20261130' THEN t~total_price ELSE 0 END ) AS november_total, SUM( CASE WHEN t~begin_date BETWEEN '20261101' AND '20261130' THEN t~total_price ELSE 0 END ) - SUM( CASE WHEN t~begin_date BETWEEN '20261001' AND '20261031' THEN t~total_price ELSE 0 END ) AS price_change FROM /dmo/travel AS t WHERE t~begin_date BETWEEN '20261001' AND '20261130' GROUP BY t~currency_code",
+      "ordered": false
+    }
+  ]
+}

@@ -1,0 +1,54 @@
+{
+  "items": [
+    {
+      "question": "Which agencies handled more trips starting in June 2026 than in April 2027? Return agency numbers, names, and the trip count for each month.",
+      "reference_sql": "SELECT a~agency_id, a~name, SUM( CASE WHEN t~begin_date BETWEEN '20260601' AND '20260630' THEN 1 ELSE 0 END ) AS june_trips, SUM( CASE WHEN t~begin_date BETWEEN '20270401' AND '20270430' THEN 1 ELSE 0 END ) AS april_trips FROM /dmo/agency AS a INNER JOIN /dmo/travel AS t ON t~agency_id = a~agency_id GROUP BY a~agency_id, a~name HAVING SUM( CASE WHEN t~begin_date BETWEEN '20260601' AND '20260630' THEN 1 ELSE 0 END ) > SUM( CASE WHEN t~begin_date BETWEEN '20270401' AND '20270430' THEN 1 ELSE 0 END )",
+      "ordered": false
+    },
+    {
+      "question": "Which customers have both booked and planned trips? Return customer numbers, first and last names, total trip counts, and separate counts of booked and planned trips.",
+      "reference_sql": "SELECT c~customer_id, c~first_name, c~last_name, COUNT(*) AS total_trips, SUM( CASE WHEN t~status = 'B' THEN 1 ELSE 0 END ) AS booked_trips, SUM( CASE WHEN t~status = 'P' THEN 1 ELSE 0 END ) AS planned_trips FROM /dmo/customer AS c INNER JOIN /dmo/travel AS t ON t~customer_id = c~customer_id GROUP BY c~customer_id, c~first_name, c~last_name HAVING SUM( CASE WHEN t~status = 'B' THEN 1 ELSE 0 END ) > 0 AND SUM( CASE WHEN t~status = 'P' THEN 1 ELSE 0 END ) > 0",
+      "ordered": false
+    },
+    {
+      "question": "For each currency, which trip starting in the fourth quarter of 2026 had the highest booking fee? Choose the lowest trip number if tied. Return the currency, trip number, agency name, and booking fee, sorted by currency, then trip number.",
+      "reference_sql": "SELECT t~currency_code, t~travel_id, a~name AS agency_name, t~booking_fee FROM /dmo/travel AS t INNER JOIN /dmo/agency AS a ON a~agency_id = t~agency_id WHERE t~begin_date BETWEEN '20261001' AND '20261231' AND NOT EXISTS ( SELECT * FROM /dmo/travel AS t2 WHERE t2~currency_code = t~currency_code AND t2~begin_date BETWEEN '20261001' AND '20261231' AND ( t2~booking_fee > t~booking_fee OR ( t2~booking_fee = t~booking_fee AND t2~travel_id < t~travel_id ) ) ) ORDER BY t~currency_code ASCENDING, t~travel_id ASCENDING",
+      "ordered": true
+    },
+    {
+      "question": "Which agencies have trips starting in October 2026 but none with booked status that month? Return agency numbers, names, and October trip counts.",
+      "reference_sql": "SELECT a~agency_id, a~name, COUNT(*) AS october_trips FROM /dmo/agency AS a INNER JOIN /dmo/travel AS t ON t~agency_id = a~agency_id WHERE t~begin_date BETWEEN '20261001' AND '20261031' AND NOT EXISTS ( SELECT * FROM /dmo/travel AS t2 WHERE t2~agency_id = a~agency_id AND t2~begin_date BETWEEN '20261001' AND '20261031' AND t2~status = 'B' ) GROUP BY a~agency_id, a~name",
+      "ordered": false
+    },
+    {
+      "question": "Which trips starting in the fourth quarter of 2026 have at least two flight bookings, all with the same carrier? Return trip numbers, carrier codes and names, and flight booking counts.",
+      "reference_sql": "SELECT t~travel_id, c~carrier_id, c~name, COUNT(*) AS flight_bookings FROM /dmo/travel AS t INNER JOIN /dmo/booking AS b ON b~travel_id = t~travel_id INNER JOIN /dmo/carrier AS c ON c~carrier_id = b~carrier_id WHERE t~begin_date BETWEEN '20261001' AND '20261231' AND NOT EXISTS ( SELECT * FROM /dmo/booking AS b2 WHERE b2~travel_id = t~travel_id AND b2~carrier_id <> b~carrier_id ) GROUP BY t~travel_id, c~carrier_id, c~name HAVING COUNT(*) >= 2",
+      "ordered": false
+    },
+    {
+      "question": "Which airports had both domestic and international departures in October 2026? Treat flights between airports in the same country as domestic. Return departure airport codes, names, and separate domestic and international flight counts.",
+      "reference_sql": "SELECT origin~airport_id, origin~name, SUM( CASE WHEN origin~country = destination~country THEN 1 ELSE 0 END ) AS domestic_flights, SUM( CASE WHEN origin~country <> destination~country THEN 1 ELSE 0 END ) AS international_flights FROM /dmo/flight AS f INNER JOIN /dmo/connection AS cn ON cn~carrier_id = f~carrier_id AND cn~connection_id = f~connection_id INNER JOIN /dmo/airport AS origin ON origin~airport_id = cn~airport_from_id INNER JOIN /dmo/airport AS destination ON destination~airport_id = cn~airport_to_id WHERE f~flight_date BETWEEN '20261001' AND '20261031' GROUP BY origin~airport_id, origin~name HAVING SUM( CASE WHEN origin~country = destination~country THEN 1 ELSE 0 END ) > 0 AND SUM( CASE WHEN origin~country <> destination~country THEN 1 ELSE 0 END ) > 0",
+      "ordered": false
+    },
+    {
+      "question": "Which aircraft types were scheduled by at least two carriers in the fourth quarter of 2026? Return aircraft types, carrier counts, and scheduled flight counts.",
+      "reference_sql": "SELECT f~plane_type_id, COUNT( DISTINCT f~carrier_id ) AS carrier_count, COUNT(*) AS flight_count FROM /dmo/flight AS f WHERE f~flight_date BETWEEN '20261001' AND '20261231' GROUP BY f~plane_type_id HAVING COUNT( DISTINCT f~carrier_id ) >= 2",
+      "ordered": false
+    },
+    {
+      "question": "Which agencies handled more trips for customers from other countries than for customers from their own country? Return agency numbers, names, country codes, and separate trip counts for those two customer groups.",
+      "reference_sql": "SELECT a~agency_id, a~name, a~country_code, SUM( CASE WHEN c~country_code <> a~country_code THEN 1 ELSE 0 END ) AS other_country_trips, SUM( CASE WHEN c~country_code = a~country_code THEN 1 ELSE 0 END ) AS same_country_trips FROM /dmo/agency AS a INNER JOIN /dmo/travel AS t ON t~agency_id = a~agency_id INNER JOIN /dmo/customer AS c ON c~customer_id = t~customer_id GROUP BY a~agency_id, a~name, a~country_code HAVING SUM( CASE WHEN c~country_code <> a~country_code THEN 1 ELSE 0 END ) > SUM( CASE WHEN c~country_code = a~country_code THEN 1 ELSE 0 END )",
+      "ordered": false
+    },
+    {
+      "question": "Which trips starting in October 2026 have flight bookings with at least one purchased extra on every booking? Return trip numbers and flight booking counts.",
+      "reference_sql": "SELECT t~travel_id, COUNT(*) AS flight_bookings FROM /dmo/travel AS t INNER JOIN /dmo/booking AS b ON b~travel_id = t~travel_id WHERE t~begin_date BETWEEN '20261001' AND '20261031' AND NOT EXISTS ( SELECT * FROM /dmo/booking AS b2 WHERE b2~travel_id = t~travel_id AND NOT EXISTS ( SELECT * FROM /dmo/book_suppl AS s WHERE s~travel_id = b2~travel_id AND s~booking_id = b2~booking_id ) ) GROUP BY t~travel_id",
+      "ordered": false
+    },
+    {
+      "question": "For each distance unit, how many airline connections are shorter than 500, from 500 to under 2,000, or at least 2,000 in that unit? Return the unit and the three connection counts.",
+      "reference_sql": "SELECT cn~distance_unit, SUM( CASE WHEN cn~distance < 500 THEN 1 ELSE 0 END ) AS short_connections, SUM( CASE WHEN cn~distance >= 500 AND cn~distance < 2000 THEN 1 ELSE 0 END ) AS medium_connections, SUM( CASE WHEN cn~distance >= 2000 THEN 1 ELSE 0 END ) AS long_connections FROM /dmo/connection AS cn GROUP BY cn~distance_unit",
+      "ordered": false
+    }
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "items": [
+    {
+      "question": "For each airline with flights in July 2026, list its code and name, the number of scheduled flights, the total seat capacity, and the total number of occupied seats.",
+      "reference_sql": "SELECT c~carrier_id, c~name, COUNT( * ) AS flight_count, SUM( f~seats_max ) AS total_capacity, SUM( f~seats_occupied ) AS occupied_seats FROM /dmo/carrier AS c INNER JOIN /dmo/flight AS f ON f~carrier_id = c~carrier_id WHERE f~flight_date BETWEEN '20260701' AND '20260731' GROUP BY c~carrier_id, c~name UP TO 1000 ROWS",
+      "ordered": false
+    },
+    {
+      "question": "Which 10 travel agencies served the most distinct customers on trips starting in July 2026, including trips of any status? Return agency IDs, agency names, and distinct customer counts, sorted by customer count from highest to lowest, then by agency ID ascending.",
+      "reference_sql": "SELECT a~agency_id, a~name, COUNT( DISTINCT t~customer_id ) AS customer_count FROM /dmo/agency AS a INNER JOIN /dmo/travel AS t ON t~agency_id = a~agency_id WHERE t~begin_date BETWEEN '20260701' AND '20260731' GROUP BY a~agency_id, a~name ORDER BY customer_count DESCENDING, a~agency_id ASCENDING UP TO 10 ROWS",
+      "ordered": true
+    },
+    {
+      "question": "Which five departure airports have the most listed flight connections, counting each airline's numbered connection separately? Return airport codes, airport names, and connection counts, sorted by connection count from highest to lowest, then by airport code alphabetically.",
+      "reference_sql": "SELECT a~airport_id, a~name, COUNT( * ) AS connection_count FROM /dmo/airport AS a INNER JOIN /dmo/connection AS c ON c~airport_from_id = a~airport_id GROUP BY a~airport_id, a~name ORDER BY connection_count DESCENDING, a~airport_id ASCENDING UP TO 5 ROWS",
+      "ordered": true
+    },
+    {
+      "question": "For trips starting between June 16 and December 31, 2026, inclusive, how many trips and distinct customers are represented in each customer country? Include trips of every status and return the country codes with both counts.",
+      "reference_sql": "SELECT c~country_code, COUNT( * ) AS trip_count, COUNT( DISTINCT c~customer_id ) AS customer_count FROM /dmo/customer AS c INNER JOIN /dmo/travel AS t ON t~customer_id = c~customer_id WHERE t~begin_date BETWEEN '20260616' AND '20261231' GROUP BY c~country_code UP TO 1000 ROWS",
+      "ordered": false
+    },
+    {
+      "question": "Which 10 combinations of add-on category and currency have the most add-on entries attached to bookings? Return the category code, currency code, entry count, and total recorded add-on price in that currency. Sort by entry count from highest to lowest, then by category code ascending, then by currency code alphabetically.",
+      "reference_sql": "SELECT s~supplement_category, b~currency_code, COUNT( * ) AS entry_count, SUM( b~price ) AS total_price FROM /dmo/supplement AS s INNER JOIN /dmo/book_suppl AS b ON b~supplement_id = s~supplement_id GROUP BY s~supplement_category, b~currency_code ORDER BY entry_count DESCENDING, s~supplement_category ASCENDING, b~currency_code ASCENDING UP TO 10 ROWS",
+      "ordered": true
+    }
+  ]
+}

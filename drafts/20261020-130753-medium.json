@@ -1,0 +1,54 @@
+{
+  "items": [
+    {
+      "question": "For each country with domestic connections, show its country code, connection count, and number of different departure airports. Count each airline's numbered connection separately.",
+      "reference_sql": "SELECT d~country, COUNT(*) AS connection_count, COUNT( DISTINCT c~airport_from_id ) AS departure_airport_count FROM /dmo/connection AS c INNER JOIN /dmo/airport AS d ON d~airport_id = c~airport_from_id INNER JOIN /dmo/airport AS a ON a~airport_id = c~airport_to_id WHERE d~country = a~country GROUP BY d~country",
+      "ordered": false
+    },
+    {
+      "question": "Which 10 agency locations account for the most trips? Return city names, country codes, trip counts, and the number of agencies handling those trips, most trips first, then by country code and city name.",
+      "reference_sql": "SELECT a~city, a~country_code, COUNT(*) AS trip_count, COUNT( DISTINCT a~agency_id ) AS agency_count FROM /dmo/agency AS a INNER JOIN /dmo/travel AS t ON t~agency_id = a~agency_id GROUP BY a~city, a~country_code ORDER BY trip_count DESCENDING, a~country_code ASCENDING, a~city ASCENDING UP TO 10 ROWS",
+      "ordered": true
+    },
+    {
+      "question": "For each passenger home country represented in add-on purchases, show the country code, number of purchased add-on entries, number of different add-ons, and number of passengers who purchased them.",
+      "reference_sql": "SELECT c~country_code, COUNT(*) AS entry_count, COUNT( DISTINCT s~supplement_id ) AS addon_count, COUNT( DISTINCT c~customer_id ) AS passenger_count FROM /dmo/customer AS c INNER JOIN /dmo/booking AS b ON b~customer_id = c~customer_id INNER JOIN /dmo/book_suppl AS s ON s~travel_id = b~travel_id AND s~booking_id = b~booking_id GROUP BY c~country_code",
+      "ordered": false
+    },
+    {
+      "question": "How much has been charged for add-ons on each airline's bookings, separately by currency? Return airline codes and names, currency codes, purchased entry counts, and total add-on charges.",
+      "reference_sql": "SELECT c~carrier_id, c~name, s~currency_code, COUNT(*) AS entry_count, SUM( s~price ) AS total_addon_charges FROM /dmo/carrier AS c INNER JOIN /dmo/booking AS b ON b~carrier_id = c~carrier_id INNER JOIN /dmo/book_suppl AS s ON s~travel_id = b~travel_id AND s~booking_id = b~booking_id GROUP BY c~carrier_id, c~name, s~currency_code",
+      "ordered": false
+    },
+    {
+      "question": "Which 10 agencies have arranged bookings on the widest variety of aircraft types? Return agency IDs and aircraft type counts, most types first, then by agency ID.",
+      "reference_sql": "SELECT t~agency_id, COUNT( DISTINCT f~plane_type_id ) AS aircraft_type_count FROM /dmo/travel AS t INNER JOIN /dmo/booking AS b ON b~travel_id = t~travel_id INNER JOIN /dmo/flight AS f ON f~carrier_id = b~carrier_id AND f~connection_id = b~connection_id AND f~flight_date = b~flight_date GROUP BY t~agency_id ORDER BY aircraft_type_count DESCENDING, t~agency_id ASCENDING UP TO 10 ROWS",
+      "ordered": true
+    },
+    {
+      "question": "How many flights are scheduled at each departure time of day in October 2026? Return departure times, flight counts, and airline counts, earliest time first.",
+      "reference_sql": "SELECT c~departure_time, COUNT(*) AS flight_count, COUNT( DISTINCT f~carrier_id ) AS airline_count FROM /dmo/connection AS c INNER JOIN /dmo/flight AS f ON f~carrier_id = c~carrier_id AND f~connection_id = c~connection_id WHERE f~flight_date BETWEEN '20261001' AND '20261031' GROUP BY c~departure_time ORDER BY c~departure_time ASCENDING",
+      "ordered": true
+    },
+    {
+      "question": "For every airport, show its code and name, how many different airports its listed connections depart to, and how many different airports have listed connections arriving there. Include airports with no connections.",
+      "reference_sql": "SELECT a~airport_id, a~name, COUNT( DISTINCT outgoing~airport_to_id ) AS destination_count, COUNT( DISTINCT incoming~airport_from_id ) AS origin_count FROM /dmo/airport AS a LEFT OUTER JOIN /dmo/connection AS outgoing ON outgoing~airport_from_id = a~airport_id LEFT OUTER JOIN /dmo/connection AS incoming ON incoming~airport_to_id = a~airport_id GROUP BY a~airport_id, a~name",
+      "ordered": false
+    },
+    {
+      "question": "For each passenger home country with flight bookings, show the country code, earliest and latest booking dates, and number of different dates on which bookings were made.",
+      "reference_sql": "SELECT c~country_code, MIN( b~booking_date ) AS earliest_booking_date, MAX( b~booking_date ) AS latest_booking_date, COUNT( DISTINCT b~booking_date ) AS booking_date_count FROM /dmo/customer AS c INNER JOIN /dmo/booking AS b ON b~customer_id = c~customer_id GROUP BY c~country_code",
+      "ordered": false
+    },
+    {
+      "question": "Which 10 trips include flights on the most different dates? Return trip IDs, agency names, flight-date counts, and first and last flight dates, most dates first, then by trip ID.",
+      "reference_sql": "SELECT t~travel_id, a~name, COUNT( DISTINCT b~flight_date ) AS flight_date_count, MIN( b~flight_date ) AS first_flight_date, MAX( b~flight_date ) AS last_flight_date FROM /dmo/travel AS t INNER JOIN /dmo/agency AS a ON a~agency_id = t~agency_id INNER JOIN /dmo/booking AS b ON b~travel_id = t~travel_id GROUP BY t~travel_id, a~name ORDER BY flight_date_count DESCENDING, t~travel_id ASCENDING UP TO 10 ROWS",
+      "ordered": true
+    },
+    {
+      "question": "Which 10 pairs of different agencies share the most trip customers? Return each pair once, with the lower agency ID first, and the shared-customer count. Sort by most shared customers, then by the first and second agency IDs.",
+      "reference_sql": "SELECT a~agency_id AS first_agency_id, b~agency_id AS second_agency_id, COUNT( DISTINCT a~customer_id ) AS shared_customer_count FROM /dmo/travel AS a INNER JOIN /dmo/travel AS b ON b~customer_id = a~customer_id AND a~agency_id < b~agency_id GROUP BY a~agency_id, b~agency_id ORDER BY shared_customer_count DESCENDING, a~agency_id ASCENDING, b~agency_id ASCENDING UP TO 10 ROWS",
+      "ordered": true
+    }
+  ]
+}

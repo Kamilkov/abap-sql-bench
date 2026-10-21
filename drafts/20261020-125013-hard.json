@@ -1,0 +1,54 @@
+{
+  "items": [
+    {
+      "question": "Which agencies handled trips starting in all three months of the fourth quarter of 2026? Return agency numbers, names, and separate trip counts for October, November, and December.",
+      "reference_sql": "SELECT a~agency_id, a~name, SUM( CASE WHEN t~begin_date BETWEEN '20261001' AND '20261031' THEN 1 ELSE 0 END ) AS october_trips, SUM( CASE WHEN t~begin_date BETWEEN '20261101' AND '20261130' THEN 1 ELSE 0 END ) AS november_trips, SUM( CASE WHEN t~begin_date BETWEEN '20261201' AND '20261231' THEN 1 ELSE 0 END ) AS december_trips FROM /dmo/agency AS a INNER JOIN /dmo/travel AS t ON t~agency_id = a~agency_id GROUP BY a~agency_id, a~name HAVING SUM( CASE WHEN t~begin_date BETWEEN '20261001' AND '20261031' THEN 1 ELSE 0 END ) > 0 AND SUM( CASE WHEN t~begin_date BETWEEN '20261101' AND '20261130' THEN 1 ELSE 0 END ) > 0 AND SUM( CASE WHEN t~begin_date BETWEEN '20261201' AND '20261231' THEN 1 ELSE 0 END ) > 0",
+      "ordered": false
+    },
+    {
+      "question": "Which customers have more trips marked booked than new? Return customer numbers, first and last names, and their booked and new trip counts.",
+      "reference_sql": "SELECT c~customer_id, c~first_name, c~last_name, SUM( CASE WHEN t~status = 'B' THEN 1 ELSE 0 END ) AS booked_trips, SUM( CASE WHEN t~status = 'N' THEN 1 ELSE 0 END ) AS new_trips FROM /dmo/customer AS c INNER JOIN /dmo/travel AS t ON t~customer_id = c~customer_id GROUP BY c~customer_id, c~first_name, c~last_name HAVING SUM( CASE WHEN t~status = 'B' THEN 1 ELSE 0 END ) > SUM( CASE WHEN t~status = 'N' THEN 1 ELSE 0 END )",
+      "ordered": false
+    },
+    {
+      "question": "Which 20 customers have the highest combined prices for euro-priced trips, counting only customers who used at least two agencies for those trips? Return customer numbers, first and last names, trip counts, agency counts, and total prices in euros. Sort by total price, highest first, then customer number.",
+      "reference_sql": "SELECT c~customer_id, c~first_name, c~last_name, COUNT( * ) AS trip_count, COUNT( DISTINCT t~agency_id ) AS agency_count, SUM( t~total_price ) AS total_eur FROM /dmo/customer AS c INNER JOIN /dmo/travel AS t ON t~customer_id = c~customer_id WHERE t~currency_code = 'EUR' GROUP BY c~customer_id, c~first_name, c~last_name HAVING COUNT( DISTINCT t~agency_id ) >= 2 ORDER BY total_eur DESCENDING, c~customer_id ASCENDING UP TO 20 ROWS",
+      "ordered": true
+    },
+    {
+      "question": "For each airline and distance unit, show its longest connection, choosing the lowest connection number if tied. Return airline codes and names, connection numbers, departure and arrival airport codes, distances, and units. Sort by airline code, unit, then connection number.",
+      "reference_sql": "SELECT c~carrier_id, a~name, c~connection_id, c~airport_from_id, c~airport_to_id, c~distance, c~distance_unit FROM /dmo/connection AS c INNER JOIN /dmo/carrier AS a ON a~carrier_id = c~carrier_id WHERE NOT EXISTS ( SELECT x~connection_id FROM /dmo/connection AS x WHERE x~carrier_id = c~carrier_id AND x~distance_unit = c~distance_unit AND ( x~distance > c~distance OR ( x~distance = c~distance AND x~connection_id < c~connection_id ) ) ) ORDER BY c~carrier_id ASCENDING, c~distance_unit ASCENDING, c~connection_id ASCENDING",
+      "ordered": true
+    },
+    {
+      "question": "At each departure airport, which airline scheduled the most flights in October 2026? Include all airlines tied for first. Return airport codes and names, airline codes and names, and flight counts.",
+      "reference_sql": "SELECT p~airport_id, p~name AS airport_name, a~carrier_id, a~name AS airline_name, COUNT( * ) AS flight_count FROM /dmo/flight AS f INNER JOIN /dmo/connection AS c ON c~carrier_id = f~carrier_id AND c~connection_id = f~connection_id INNER JOIN /dmo/airport AS p ON p~airport_id = c~airport_from_id INNER JOIN /dmo/carrier AS a ON a~carrier_id = f~carrier_id WHERE f~flight_date BETWEEN '20261001' AND '20261031' GROUP BY p~airport_id, p~name, a~carrier_id, a~name HAVING COUNT( * ) >= ALL ( SELECT COUNT( * ) AS competing_count FROM /dmo/flight AS x INNER JOIN /dmo/connection AS y ON y~carrier_id = x~carrier_id AND y~connection_id = x~connection_id WHERE y~airport_from_id = p~airport_id AND x~flight_date BETWEEN '20261001' AND '20261031' GROUP BY x~carrier_id )",
+      "ordered": false
+    },
+    {
+      "question": "For each currency, which traveler country spent the most on purchased extras? Include all countries tied for first. Return country codes, currencies, extra counts, and total charges.",
+      "reference_sql": "SELECT c~country_code, s~currency_code, COUNT( * ) AS extra_count, SUM( s~price ) AS total_charges FROM /dmo/book_suppl AS s INNER JOIN /dmo/booking AS b ON b~travel_id = s~travel_id AND b~booking_id = s~booking_id INNER JOIN /dmo/customer AS c ON c~customer_id = b~customer_id GROUP BY c~country_code, s~currency_code HAVING SUM( s~price ) >= ALL ( SELECT SUM( x~price ) AS competing_total FROM /dmo/book_suppl AS x INNER JOIN /dmo/booking AS y ON y~travel_id = x~travel_id AND y~booking_id = x~booking_id INNER JOIN /dmo/customer AS z ON z~customer_id = y~customer_id WHERE x~currency_code = s~currency_code GROUP BY z~country_code )",
+      "ordered": false
+    },
+    {
+      "question": "Which 20 agencies had the widest range of booking lead times for flights departing in December 2026? Measure lead time as days from booking to departure. Return agency numbers, names, booking counts, shortest and longest lead times, and their difference. Sort by the difference, largest first, then agency number.",
+      "reference_sql": "SELECT a~agency_id, a~name, COUNT( * ) AS booking_count, MIN( dats_days_between( b~booking_date, b~flight_date ) ) AS shortest_lead_days, MAX( dats_days_between( b~booking_date, b~flight_date ) ) AS longest_lead_days, MAX( dats_days_between( b~booking_date, b~flight_date ) ) - MIN( dats_days_between( b~booking_date, b~flight_date ) ) AS lead_range_days FROM /dmo/agency AS a INNER JOIN /dmo/travel AS t ON t~agency_id = a~agency_id INNER JOIN /dmo/booking AS b ON b~travel_id = t~travel_id WHERE b~flight_date BETWEEN '20261201' AND '20261231' GROUP BY a~agency_id, a~name ORDER BY lead_range_days DESCENDING, a~agency_id ASCENDING UP TO 20 ROWS",
+      "ordered": true
+    },
+    {
+      "question": "Among trips with multiple flight bookings to the same destination airport, which 20 have the most distinct destination airports? Return trip numbers, flight booking counts, and distinct destination counts. Sort by destination count, highest first, then trip number.",
+      "reference_sql": "SELECT b~travel_id, COUNT( * ) AS booking_count, COUNT( DISTINCT c~airport_to_id ) AS destination_count FROM /dmo/booking AS b INNER JOIN /dmo/connection AS c ON c~carrier_id = b~carrier_id AND c~connection_id = b~connection_id GROUP BY b~travel_id HAVING COUNT( * ) > COUNT( DISTINCT c~airport_to_id ) ORDER BY destination_count DESCENDING, b~travel_id ASCENDING UP TO 20 ROWS",
+      "ordered": true
+    },
+    {
+      "question": "Among customers with no trips marked planned, which 20 have trips with flight bookings across the most airlines? Return customer numbers, first and last names, airline counts, and flight booking counts. Sort by airline count, highest first, then customer number.",
+      "reference_sql": "SELECT c~customer_id, c~first_name, c~last_name, COUNT( DISTINCT b~carrier_id ) AS airline_count, COUNT( * ) AS booking_count FROM /dmo/customer AS c INNER JOIN /dmo/travel AS t ON t~customer_id = c~customer_id INNER JOIN /dmo/booking AS b ON b~travel_id = t~travel_id WHERE NOT EXISTS ( SELECT x~travel_id FROM /dmo/travel AS x WHERE x~customer_id = c~customer_id AND x~status = 'P' ) GROUP BY c~customer_id, c~first_name, c~last_name ORDER BY airline_count DESCENDING, c~customer_id ASCENDING UP TO 20 ROWS",
+      "ordered": true
+    },
+    {
+      "question": "Which 20 customers have the most combined trip days for trips starting in April 2027? Add each trip's full duration, including its start and end dates, counting overlapping trips separately. Return customer numbers, first and last names, trip counts, and combined trip days. Sort by combined days, highest first, then customer number.",
+      "reference_sql": "SELECT c~customer_id, c~first_name, c~last_name, COUNT( * ) AS trip_count, SUM( dats_days_between( t~begin_date, t~end_date ) + 1 ) AS combined_trip_days FROM /dmo/customer AS c INNER JOIN /dmo/travel AS t ON t~customer_id = c~customer_id WHERE t~begin_date BETWEEN '20270401' AND '20270430' GROUP BY c~customer_id, c~first_name, c~last_name ORDER BY combined_trip_days DESCENDING, c~customer_id ASCENDING UP TO 20 ROWS",
+      "ordered": true
+    }
+  ]
+}

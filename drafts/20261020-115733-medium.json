@@ -1,0 +1,54 @@
+{
+  "items": [
+    {
+      "question": "Which 10 customers have the most trips? Return their IDs, first and last names, trip counts, and the number of different agencies they used, most trips first, then by customer ID.",
+      "reference_sql": "SELECT c~customer_id, c~first_name, c~last_name, COUNT(*) AS trip_count, COUNT( DISTINCT t~agency_id ) AS agency_count FROM /dmo/customer AS c INNER JOIN /dmo/travel AS t ON t~customer_id = c~customer_id GROUP BY c~customer_id, c~first_name, c~last_name ORDER BY trip_count DESCENDING, c~customer_id ASCENDING UP TO 10 ROWS",
+      "ordered": true
+    },
+    {
+      "question": "Which 10 trips starting in October 2026 have the most flight bookings? Return trip IDs, the trip customers' first and last names, and booking counts, most bookings first, then by trip ID.",
+      "reference_sql": "SELECT t~travel_id, c~first_name, c~last_name, COUNT(*) AS booking_count FROM /dmo/travel AS t INNER JOIN /dmo/customer AS c ON c~customer_id = t~customer_id INNER JOIN /dmo/booking AS b ON b~travel_id = t~travel_id WHERE t~begin_date BETWEEN '20261001' AND '20261031' GROUP BY t~travel_id, c~first_name, c~last_name ORDER BY booking_count DESCENDING, t~travel_id ASCENDING UP TO 10 ROWS",
+      "ordered": true
+    },
+    {
+      "question": "For each airline with scheduled flights, show its code and name, the number of different aircraft types it uses, and its smallest and largest aircraft seating capacities.",
+      "reference_sql": "SELECT c~carrier_id, c~name, COUNT( DISTINCT f~plane_type_id ) AS aircraft_type_count, MIN( f~seats_max ) AS smallest_capacity, MAX( f~seats_max ) AS largest_capacity FROM /dmo/carrier AS c INNER JOIN /dmo/flight AS f ON f~carrier_id = c~carrier_id GROUP BY c~carrier_id, c~name",
+      "ordered": false
+    },
+    {
+      "question": "Which 10 airport pairs have connections offered by the most different airlines, treating each direction separately? Return departure and arrival airport codes and names, plus airline counts, highest count first, then by departure code and arrival code.",
+      "reference_sql": "SELECT c~airport_from_id, a~name AS departure_airport_name, c~airport_to_id, z~name AS arrival_airport_name, COUNT( DISTINCT c~carrier_id ) AS airline_count FROM /dmo/connection AS c INNER JOIN /dmo/airport AS a ON a~airport_id = c~airport_from_id INNER JOIN /dmo/airport AS z ON z~airport_id = c~airport_to_id GROUP BY c~airport_from_id, a~name, c~airport_to_id, z~name ORDER BY airline_count DESCENDING, c~airport_from_id ASCENDING, c~airport_to_id ASCENDING UP TO 10 ROWS",
+      "ordered": true
+    },
+    {
+      "question": "Which 10 combinations of agency country and customer country account for the most trips? Return both country codes and trip counts, most trips first, then by agency country and customer country.",
+      "reference_sql": "SELECT a~country_code AS agency_country, c~country_code AS customer_country, COUNT(*) AS trip_count FROM /dmo/travel AS t INNER JOIN /dmo/agency AS a ON a~agency_id = t~agency_id INNER JOIN /dmo/customer AS c ON c~customer_id = t~customer_id GROUP BY a~country_code, c~country_code ORDER BY trip_count DESCENDING, a~country_code ASCENDING, c~country_code ASCENDING UP TO 10 ROWS",
+      "ordered": true
+    },
+    {
+      "question": "For each add-on category, how many different add-ons are offered and how many currencies are used for their catalog prices? Return category codes and both counts.",
+      "reference_sql": "SELECT s~supplement_category, COUNT(*) AS addon_count, COUNT( DISTINCT s~currency_code ) AS currency_count FROM /dmo/supplement AS s GROUP BY s~supplement_category",
+      "ordered": false
+    },
+    {
+      "question": "For each departure airport with listed connections, show its code and name and the earliest and latest scheduled departure times.",
+      "reference_sql": "SELECT a~airport_id, a~name, MIN( c~departure_time ) AS earliest_departure, MAX( c~departure_time ) AS latest_departure FROM /dmo/airport AS a INNER JOIN /dmo/connection AS c ON c~airport_from_id = a~airport_id GROUP BY a~airport_id, a~name",
+      "ordered": false
+    },
+    {
+      "question": "Which 10 agencies have the highest total booking fees on trips priced in euros? Return agency IDs, names, and total booking fees in euros, highest total first, then by agency ID.",
+      "reference_sql": "SELECT a~agency_id, a~name, SUM( t~booking_fee ) AS total_booking_fees FROM /dmo/agency AS a INNER JOIN /dmo/travel AS t ON t~agency_id = a~agency_id WHERE t~currency_code = 'EUR' GROUP BY a~agency_id, a~name ORDER BY total_booking_fees DESCENDING, a~agency_id ASCENDING UP TO 10 ROWS",
+      "ordered": true
+    },
+    {
+      "question": "For each airline with flight bookings for November 2026 departures, show its code and name, the number of bookings, and the number of distinct passengers.",
+      "reference_sql": "SELECT c~carrier_id, c~name, COUNT(*) AS booking_count, COUNT( DISTINCT b~customer_id ) AS passenger_count FROM /dmo/carrier AS c INNER JOIN /dmo/booking AS b ON b~carrier_id = c~carrier_id WHERE b~flight_date BETWEEN '20261101' AND '20261130' GROUP BY c~carrier_id, c~name",
+      "ordered": false
+    },
+    {
+      "question": "Which 10 flights in October 2026 have the most unoccupied seats? Return airline codes and names, connection numbers, dates, departure and arrival airport codes, and unoccupied seat counts, most unoccupied seats first, then by date, airline code, and connection number.",
+      "reference_sql": "SELECT f~carrier_id, a~name, f~connection_id, f~flight_date, c~airport_from_id, c~airport_to_id, f~seats_max - f~seats_occupied AS unoccupied_seats FROM /dmo/flight AS f INNER JOIN /dmo/carrier AS a ON a~carrier_id = f~carrier_id INNER JOIN /dmo/connection AS c ON c~carrier_id = f~carrier_id AND c~connection_id = f~connection_id WHERE f~flight_date BETWEEN '20261001' AND '20261031' ORDER BY unoccupied_seats DESCENDING, f~flight_date ASCENDING, f~carrier_id ASCENDING, f~connection_id ASCENDING UP TO 10 ROWS",
+      "ordered": true
+    }
+  ]
+}

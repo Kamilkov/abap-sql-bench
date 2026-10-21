@@ -1,0 +1,19 @@
+{
+  "items": [
+    {
+      "question": "Which months in the fourth quarter of 2026 had more than 3,500 scheduled flights? Return the year and month and flight count, in calendar order.",
+      "reference_sql": "SELECT substring( f~flight_date, 1, 6 ) AS flight_month, COUNT(*) AS flight_count FROM /dmo/flight AS f WHERE f~flight_date BETWEEN '20261001' AND '20261231' GROUP BY substring( f~flight_date, 1, 6 ) HAVING COUNT(*) > 3500 ORDER BY flight_month ASCENDING",
+      "ordered": true
+    },
+    {
+      "question": "Which 10 agencies handled the most trips overall? Return agency numbers and names, total trips, and separate counts for trips starting in the fourth quarter of 2026, the first quarter of 2027, and all other periods. Sort by total trips, highest first, then by agency number.",
+      "reference_sql": "SELECT a~agency_id, a~name, COUNT(*) AS total_trips, SUM( CASE WHEN t~begin_date BETWEEN '20261001' AND '20261231' THEN 1 ELSE 0 END ) AS q4_2026_trips, SUM( CASE WHEN t~begin_date BETWEEN '20270101' AND '20270331' THEN 1 ELSE 0 END ) AS q1_2027_trips, SUM( CASE WHEN t~begin_date BETWEEN '20261001' AND '20270331' THEN 0 ELSE 1 END ) AS other_period_trips FROM /dmo/agency AS a INNER JOIN /dmo/travel AS t ON t~agency_id = a~agency_id GROUP BY a~agency_id, a~name ORDER BY total_trips DESCENDING, a~agency_id ASCENDING UP TO 10 ROWS",
+      "ordered": true
+    },
+    {
+      "question": "Which customers have at least one trip starting in October 2026 but none starting in November 2026? Return customer numbers, first names, and last names.",
+      "reference_sql": "SELECT c~customer_id, c~first_name, c~last_name FROM /dmo/customer AS c WHERE EXISTS ( SELECT * FROM /dmo/travel AS t WHERE t~customer_id = c~customer_id AND t~begin_date BETWEEN '20261001' AND '20261031' ) AND NOT EXISTS ( SELECT * FROM /dmo/travel AS n WHERE n~customer_id = c~customer_id AND n~begin_date BETWEEN '20261101' AND '20261130' )",
+      "ordered": false
+    }
+  ]
+}

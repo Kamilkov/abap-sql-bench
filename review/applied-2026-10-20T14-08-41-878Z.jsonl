@@ -1,0 +1,1 @@
+{"id":"q0196","action":"rewrite","question":"For each airline that had flights in September or October 2026, what percentage of its scheduled seats were occupied in September 2026 and in October 2026? Calculate each percentage from the month's total occupied seats and total capacity, rounded to 2 decimals. Return airline codes, names, and both percentages."}

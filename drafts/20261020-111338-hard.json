@@ -1,0 +1,29 @@
+{
+  "items": [
+    {
+      "question": "For trips starting from June 16, 2026 through April 18, 2027, which 10 agencies served the most distinct customers, counting only agencies that served customers from at least two countries? Return the agency number, agency name, number of distinct customers, and number of distinct customer countries. Sort by customer count, highest first, then by agency number.",
+      "reference_sql": "SELECT a~agency_id, a~name, COUNT( DISTINCT t~customer_id ) AS customer_count, COUNT( DISTINCT c~country_code ) AS country_count FROM /dmo/agency AS a INNER JOIN /dmo/travel AS t ON t~agency_id = a~agency_id INNER JOIN /dmo/customer AS c ON c~customer_id = t~customer_id WHERE t~begin_date BETWEEN '20260616' AND '20270418' GROUP BY a~agency_id, a~name HAVING COUNT( DISTINCT c~country_code ) >= 2 ORDER BY customer_count DESCENDING, a~agency_id ASCENDING UP TO 10 ROWS",
+      "ordered": true
+    },
+    {
+      "question": "For each carrier offering flights priced in US dollars from June 16, 2026 through April 18, 2027, show its cheapest flight. If several flights have the same price, choose the earliest flight date, then the lowest connection number. Return the carrier name and code, connection number, flight date, price, and currency. Sort the results by carrier name, then carrier code.",
+      "reference_sql": "SELECT c~name, f~carrier_id, f~connection_id, f~flight_date, f~price, f~currency_code FROM /dmo/flight AS f INNER JOIN /dmo/carrier AS c ON c~carrier_id = f~carrier_id WHERE f~currency_code = 'USD' AND f~flight_date BETWEEN '20260616' AND '20270418' AND NOT EXISTS ( SELECT * FROM /dmo/flight AS g WHERE g~carrier_id = f~carrier_id AND g~currency_code = 'USD' AND g~flight_date BETWEEN '20260616' AND '20270418' AND ( g~price < f~price OR ( g~price = f~price AND g~flight_date < f~flight_date ) OR ( g~price = f~price AND g~flight_date = f~flight_date AND g~connection_id < f~connection_id ) ) ) ORDER BY c~name ASCENDING, f~carrier_id ASCENDING, f~connection_id ASCENDING, f~flight_date ASCENDING UP TO 1000 ROWS",
+      "ordered": true
+    },
+    {
+      "question": "For flights departing from June 16, 2026 through April 18, 2027, how many bookings were made before the flight date, on the flight date, or after the flight date for each carrier? Return the carrier name and code, total booking count, and the three separate counts. Include only carriers with at least one booking.",
+      "reference_sql": "SELECT c~name, b~carrier_id, COUNT(*) AS booking_count, SUM( CASE WHEN b~booking_date < b~flight_date THEN 1 ELSE 0 END ) AS before_flight_count, SUM( CASE WHEN b~booking_date = b~flight_date THEN 1 ELSE 0 END ) AS on_flight_count, SUM( CASE WHEN b~booking_date > b~flight_date THEN 1 ELSE 0 END ) AS after_flight_count FROM /dmo/booking AS b INNER JOIN /dmo/carrier AS c ON c~carrier_id = b~carrier_id WHERE b~flight_date BETWEEN '20260616' AND '20270418' GROUP BY c~name, b~carrier_id UP TO 1000 ROWS",
+      "ordered": false
+    },
+    {
+      "question": "Among euro-priced trips starting from June 16, 2026 through April 18, 2027, which 20 have the highest total prices while exceeding their own agency's average total price for euro-priced trips starting in that same period? Return the trip number, agency number, agency name, total price, and currency. Sort by total price, highest first, then by trip number.",
+      "reference_sql": "SELECT t~travel_id, t~agency_id, a~name, t~total_price, t~currency_code FROM /dmo/travel AS t INNER JOIN /dmo/agency AS a ON a~agency_id = t~agency_id WHERE t~currency_code = 'EUR' AND t~begin_date BETWEEN '20260616' AND '20270418' AND t~total_price > ( SELECT AVG( x~total_price ) FROM /dmo/travel AS x WHERE x~agency_id = t~agency_id AND x~currency_code = 'EUR' AND x~begin_date BETWEEN '20260616' AND '20270418' ) ORDER BY t~total_price DESCENDING, t~travel_id ASCENDING UP TO 20 ROWS",
+      "ordered": true
+    },
+    {
+      "question": "For flights departing from June 16, 2026 through April 18, 2027, which 10 carriers had the largest total charges for purchased extras priced in US dollars? Include only carriers with at least five purchased extras priced in US dollars. Return the carrier name and code, number of those extras, and their total charges in US dollars. Sort by total charges, highest first, then by carrier code.",
+      "reference_sql": "SELECT c~name, b~carrier_id, COUNT(*) AS extra_count, SUM( s~price ) AS total_usd_charges FROM /dmo/booking AS b INNER JOIN /dmo/book_suppl AS s ON s~travel_id = b~travel_id AND s~booking_id = b~booking_id INNER JOIN /dmo/carrier AS c ON c~carrier_id = b~carrier_id WHERE b~flight_date BETWEEN '20260616' AND '20270418' AND s~currency_code = 'USD' GROUP BY c~name, b~carrier_id HAVING COUNT(*) >= 5 ORDER BY total_usd_charges DESCENDING, b~carrier_id ASCENDING UP TO 10 ROWS",
+      "ordered": true
+    }
+  ]
+}

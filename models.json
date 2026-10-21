@@ -1,0 +1,26 @@
+{
+  "claude-opus-5-5-high": {
+    "role": "baseline",
+    "identity": "claude-opus-5-5@high"
+  },
+  "claude-opus-5-5-high-shuffled": {
+    "role": "control",
+    "derived_from": "claude-opus-5-5-high"
+  },
+  "qwen3-4b-instruct-2507-q8_0": {
+    "role": "baseline",
+    "identity": "aa7252f68dda4d25dfffa65b3760af6d2c3231a140c0060c78d444686d98a374"
+  },
+  "qwen3-4b-instruct-2507-q8_0-fixed": {
+    "role": "baseline",
+    "derived_from": "qwen3-4b-instruct-2507-q8_0"
+  },
+  "qwen3-4b-instruct-2507-q8_0-fewshot": {
+    "role": "baseline",
+    "identity": "aa7252f68dda4d25dfffa65b3760af6d2c3231a140c0060c78d444686d98a374"
+  },
+  "qwen3-4b-instruct-2507-q8_0-fewshot-fixed": {
+    "role": "baseline",
+    "derived_from": "qwen3-4b-instruct-2507-q8_0-fewshot"
+  }
+}

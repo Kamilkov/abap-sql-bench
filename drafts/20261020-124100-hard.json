@@ -1,0 +1,54 @@
+{
+  "items": [
+    {
+      "question": "Which trips starting in October 2026 have US-dollar extras on at least two different flight bookings? Return trip numbers, the number of bookings with those extras, the number of extras, and their total charges in US dollars.",
+      "reference_sql": "SELECT t~travel_id, COUNT( DISTINCT s~booking_id ) AS booking_count, COUNT(*) AS extra_count, SUM( s~price ) AS total_extra_charges_usd FROM /dmo/travel AS t INNER JOIN /dmo/book_suppl AS s ON s~travel_id = t~travel_id WHERE t~begin_date BETWEEN '20261001' AND '20261031' AND s~currency_code = 'USD' GROUP BY t~travel_id HAVING COUNT( DISTINCT s~booking_id ) >= 2",
+      "ordered": false
+    },
+    {
+      "question": "Which customers have at least two trips, all with the same status? Return customer numbers, first and last names, the status code, and trip count.",
+      "reference_sql": "SELECT c~customer_id, c~first_name, c~last_name, MIN( t~status ) AS status_code, COUNT(*) AS trip_count FROM /dmo/customer AS c INNER JOIN /dmo/travel AS t ON t~customer_id = c~customer_id GROUP BY c~customer_id, c~first_name, c~last_name HAVING COUNT(*) >= 2 AND COUNT( DISTINCT t~status ) = 1",
+      "ordered": false
+    },
+    {
+      "question": "Which airport-to-airport routes had flights from at least two airlines in October 2026? Treat each direction separately. Return departure and arrival airport codes, airline counts, and scheduled flight counts.",
+      "reference_sql": "SELECT c~airport_from_id, c~airport_to_id, COUNT( DISTINCT f~carrier_id ) AS airline_count, COUNT(*) AS flight_count FROM /dmo/connection AS c INNER JOIN /dmo/flight AS f ON f~carrier_id = c~carrier_id AND f~connection_id = c~connection_id WHERE f~flight_date BETWEEN '20261001' AND '20261031' GROUP BY c~airport_from_id, c~airport_to_id HAVING COUNT( DISTINCT f~carrier_id ) >= 2",
+      "ordered": false
+    },
+    {
+      "question": "For each airline, what percentage of its scheduled seats were occupied in September 2026 and in October 2026? Calculate each percentage from the month's total occupied seats and total capacity, rounded to 2 decimals. Return airline codes, names, and both percentages.",
+      "reference_sql": "SELECT c~carrier_id, c~name, DIVISION( SUM( CASE WHEN f~flight_date BETWEEN '20260901' AND '20260930' THEN f~seats_occupied ELSE 0 END ) * 100, SUM( CASE WHEN f~flight_date BETWEEN '20260901' AND '20260930' THEN f~seats_max ELSE 0 END ), 2 ) AS september_occupied_pct, DIVISION( SUM( CASE WHEN f~flight_date BETWEEN '20261001' AND '20261031' THEN f~seats_occupied ELSE 0 END ) * 100, SUM( CASE WHEN f~flight_date BETWEEN '20261001' AND '20261031' THEN f~seats_max ELSE 0 END ), 2 ) AS october_occupied_pct FROM /dmo/carrier AS c INNER JOIN /dmo/flight AS f ON f~carrier_id = c~carrier_id WHERE f~flight_date BETWEEN '20260901' AND '20261031' GROUP BY c~carrier_id, c~name",
+      "ordered": false
+    },
+    {
+      "question": "Which trips starting in October 2026 have booked flights on at least two different dates? Return trip numbers, first and last flight dates, and the number of days between those dates.",
+      "reference_sql": "SELECT t~travel_id, MIN( b~flight_date ) AS first_flight_date, MAX( b~flight_date ) AS last_flight_date, DATS_DAYS_BETWEEN( MIN( b~flight_date ), MAX( b~flight_date ) ) AS flight_span_days FROM /dmo/travel AS t INNER JOIN /dmo/booking AS b ON b~travel_id = t~travel_id WHERE t~begin_date BETWEEN '20261001' AND '20261031' GROUP BY t~travel_id HAVING COUNT( DISTINCT b~flight_date ) >= 2",
+      "ordered": false
+    },
+    {
+      "question": "Which 20 euro-priced trips starting in June 2026 have the highest total price per calendar day, counting both the start and end dates? Return trip numbers, start and end dates, total prices, and prices per day rounded to 2 decimals. Sort by the rounded daily price, highest first, then by trip number.",
+      "reference_sql": "SELECT t~travel_id, t~begin_date, t~end_date, t~total_price, DIVISION( t~total_price, DATS_DAYS_BETWEEN( t~begin_date, t~end_date ) + 1, 2 ) AS price_per_day_eur FROM /dmo/travel AS t WHERE t~begin_date BETWEEN '20260601' AND '20260630' AND t~currency_code = 'EUR' ORDER BY price_per_day_eur DESCENDING, t~travel_id ASCENDING UP TO 20 ROWS",
+      "ordered": true
+    },
+    {
+      "question": "Which trips starting in October 2026 include purchased extras from at least two categories? Return trip numbers, the number of extra categories, and the number of purchased extras.",
+      "reference_sql": "SELECT t~travel_id, COUNT( DISTINCT s~supplement_category ) AS category_count, COUNT(*) AS extra_count FROM /dmo/travel AS t INNER JOIN /dmo/book_suppl AS bs ON bs~travel_id = t~travel_id INNER JOIN /dmo/supplement AS s ON s~supplement_id = bs~supplement_id WHERE t~begin_date BETWEEN '20261001' AND '20261031' GROUP BY t~travel_id HAVING COUNT( DISTINCT s~supplement_category ) >= 2",
+      "ordered": false
+    },
+    {
+      "question": "For flights departing in December 2026, what are the total flight-booking charges attached to booked, planned, and new trips? Return airline codes, names, currencies, and the three charge totals, keeping currencies separate.",
+      "reference_sql": "SELECT c~carrier_id, c~name, b~currency_code, SUM( CASE WHEN t~status = 'B' THEN b~flight_price ELSE 0 END ) AS booked_trip_charges, SUM( CASE WHEN t~status = 'P' THEN b~flight_price ELSE 0 END ) AS planned_trip_charges, SUM( CASE WHEN t~status = 'N' THEN b~flight_price ELSE 0 END ) AS new_trip_charges FROM /dmo/booking AS b INNER JOIN /dmo/travel AS t ON t~travel_id = b~travel_id INNER JOIN /dmo/carrier AS c ON c~carrier_id = b~carrier_id WHERE b~flight_date BETWEEN '20261201' AND '20261231' GROUP BY c~carrier_id, c~name, b~currency_code",
+      "ordered": false
+    },
+    {
+      "question": "For each trip status, what percentage of trips starting in the fourth quarter of 2026 start in December? Return status codes, quarter trip counts, December trip counts, and percentages rounded to 2 decimals.",
+      "reference_sql": "SELECT t~status, COUNT(*) AS quarter_trip_count, SUM( CASE WHEN t~begin_date BETWEEN '20261201' AND '20261231' THEN 1 ELSE 0 END ) AS december_trip_count, DIVISION( SUM( CASE WHEN t~begin_date BETWEEN '20261201' AND '20261231' THEN 1 ELSE 0 END ) * 100, COUNT(*), 2 ) AS december_percentage FROM /dmo/travel AS t WHERE t~begin_date BETWEEN '20261001' AND '20261231' GROUP BY t~status",
+      "ordered": false
+    },
+    {
+      "question": "For trips starting in April 2027, how much of the total trip price comes from booking fees? Return each currency, total booking fees, total trip prices, and booking fees as a percentage of total trip prices, rounded to 2 decimals. Keep currencies separate.",
+      "reference_sql": "SELECT t~currency_code, SUM( t~booking_fee ) AS total_booking_fees, SUM( t~total_price ) AS total_trip_prices, DIVISION( SUM( t~booking_fee ) * 100, SUM( t~total_price ), 2 ) AS booking_fee_percentage FROM /dmo/travel AS t WHERE t~begin_date BETWEEN '20270401' AND '20270430' GROUP BY t~currency_code",
+      "ordered": false
+    }
+  ]
+}
